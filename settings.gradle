@@ -1,1 +1,1 @@
-include ':sample', ':anny-prefs'
+include ':sample', ':annyprefs', ':annyprefs-annotations', ':annyprefs-compiler'
