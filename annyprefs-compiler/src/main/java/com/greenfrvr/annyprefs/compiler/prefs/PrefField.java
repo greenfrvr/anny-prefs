@@ -14,4 +14,8 @@ public interface PrefField<T> {
     String key();
 
     T value();
+
+    Class<T> fieldClass();
+
+    String methodName();
 }

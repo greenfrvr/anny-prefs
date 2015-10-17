@@ -1,6 +1,8 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.greenfrvr.annyprefs.annotation.BoolPref;
+import com.greenfrvr.annyprefs.compiler.GeneratorUtil;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import javax.lang.model.element.Element;
 
@@ -36,6 +38,16 @@ public class BooleanField implements PrefField<Boolean> {
     @Override
     public Boolean value() {
         return el.getAnnotation(BoolPref.class).value();
+    }
+
+    @Override
+    public Class<Boolean> fieldClass() {
+        return Boolean.class;
+    }
+
+    @Override
+    public String methodName() {
+        return GeneratorUtil.METHOD_BOOLEAN;
     }
 
     @Override

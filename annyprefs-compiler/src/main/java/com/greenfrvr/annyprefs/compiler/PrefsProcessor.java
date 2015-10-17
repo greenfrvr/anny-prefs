@@ -10,6 +10,7 @@ import com.greenfrvr.annyprefs.annotation.StringPref;
 import com.greenfrvr.annyprefs.annotation.StringSetPref;
 import com.greenfrvr.annyprefs.compiler.prefs.PrefField;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -86,13 +87,25 @@ public class PrefsProcessor extends AbstractProcessor {
                 return true;
             }
             System.out.println("Got AnnyPref annotation for [" + element.getSimpleName().toString() + "] class!");
-            map.put(element.getSimpleName().toString(), new Anny());
+            map.put(element.getSimpleName().toString(), new Anny(element.getSimpleName().toString()));
         }
 
         searchAnnotations(roundEnv);
         printAnnyPrefs();
 
+        generate();
+
         return true;
+    }
+
+    private void generate(){
+        for(Anny anny : map.values()){
+            try {
+                anny.generateCode(filer);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void searchAnnotations(RoundEnvironment roundEnv) {

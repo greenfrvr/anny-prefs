@@ -1,6 +1,7 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.greenfrvr.annyprefs.annotation.StringPref;
+import com.greenfrvr.annyprefs.compiler.GeneratorUtil;
 
 import javax.lang.model.element.Element;
 
@@ -36,6 +37,16 @@ public class StringField implements PrefField<String> {
     @Override
     public String value() {
         return el.getAnnotation(StringPref.class).value();
+    }
+
+    @Override
+    public Class<String> fieldClass() {
+        return String.class;
+    }
+
+    @Override
+    public String methodName() {
+        return GeneratorUtil.METHOD_STRING;
     }
 
     @Override

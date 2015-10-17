@@ -1,6 +1,7 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.greenfrvr.annyprefs.annotation.IntPref;
+import com.greenfrvr.annyprefs.compiler.GeneratorUtil;
 
 import javax.lang.model.element.Element;
 
@@ -36,6 +37,16 @@ public class IntField implements PrefField<Integer> {
     @Override
     public Integer value() {
         return el.getAnnotation(IntPref.class).value();
+    }
+
+    @Override
+    public Class<Integer> fieldClass() {
+        return Integer.class;
+    }
+
+    @Override
+    public String methodName() {
+        return GeneratorUtil.METHOD_INT;
     }
 
     @Override
