@@ -2,7 +2,6 @@ package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.greenfrvr.annyprefs.annotation.BoolPref;
 import com.greenfrvr.annyprefs.compiler.GeneratorUtil;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import javax.lang.model.element.Element;
 

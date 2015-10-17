@@ -1,6 +1,10 @@
 package com.greenfrvr.annyprefs.compiler;
 
+import com.greenfrvr.annyprefs.compiler.prefs.PrefField;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+
+import javax.lang.model.element.Modifier;
 
 /**
  * Created by greenfrvr
@@ -38,4 +42,18 @@ public class GeneratorUtil {
         return name + PREFS;
     }
 
+    public static MethodSpec saveMethodInstance(PrefField field) {
+        return MethodSpec.methodBuilder(field.name())
+                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                .returns(void.class)
+                .addParameter(field.fieldClass(), "value")
+                .build();
+    }
+
+    public static MethodSpec restoreMethodInstance(PrefField field) {
+        return MethodSpec.methodBuilder(field.name())
+                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                .returns(field.fieldClass())
+                .build();
+    }
 }

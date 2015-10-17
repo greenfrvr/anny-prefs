@@ -51,56 +51,32 @@ public class Anny {
     }
 
     private void generateSaveInterface(Filer filer) throws IOException {
-        String className = GeneratorUtil.saveInterfaceName(name);
-
-        TypeSpec.Builder interfaceBuilder = TypeSpec.interfaceBuilder(className)
-                .addModifiers(Modifier.PUBLIC)
-                .addSuperinterface(GeneratorUtil.SAVE_CLASS);
+        TypeSpec.Builder interfaceBuilder = TypeSpec.interfaceBuilder(GeneratorUtil.saveInterfaceName(name))
+                .addModifiers(Modifier.PUBLIC).addSuperinterface(GeneratorUtil.SAVE_CLASS);
 
         for (PrefField field : prefs) {
-            MethodSpec method = MethodSpec.methodBuilder(field.name())
-                    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                    .returns(void.class)
-                    .addParameter(field.fieldClass(), "value")
-                    .build();
-
-            interfaceBuilder.addMethod(method);
+            interfaceBuilder.addMethod(GeneratorUtil.saveMethodInstance(field));
         }
 
-        TypeSpec typeSpec = interfaceBuilder.build();
-
-        JavaFile javaFile = JavaFile.builder(GeneratorUtil.GENERATED_PACKAGE, typeSpec).build();
-        javaFile.writeTo(filer);
+        generate(filer, interfaceBuilder.build());
     }
 
     private void generateRestoreInterface(Filer filer) throws IOException {
-        String className = GeneratorUtil.restoreInterfaceName(name);
-
-        TypeSpec.Builder interfaceBuilder = TypeSpec.interfaceBuilder(className)
-                .addModifiers(Modifier.PUBLIC)
-                .addSuperinterface(GeneratorUtil.RESTORE_CLASS);
+        TypeSpec.Builder interfaceBuilder = TypeSpec.interfaceBuilder(GeneratorUtil.restoreInterfaceName(name))
+                .addModifiers(Modifier.PUBLIC).addSuperinterface(GeneratorUtil.RESTORE_CLASS);
 
         for (PrefField field : prefs) {
-            MethodSpec method = MethodSpec.methodBuilder(field.name())
-                    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                    .returns(field.fieldClass())
-                    .build();
-
-            interfaceBuilder.addMethod(method);
+            interfaceBuilder.addMethod(GeneratorUtil.restoreMethodInstance(field));
         }
 
-        TypeSpec typeSpec = interfaceBuilder.build();
-
-        JavaFile javaFile = JavaFile.builder(GeneratorUtil.GENERATED_PACKAGE, typeSpec).build();
-        javaFile.writeTo(filer);
+        generate(filer, interfaceBuilder.build());
     }
 
     private void generatePrefsInstance(Filer filer) throws IOException {
-        String className = GeneratorUtil.prefsInstanceName(name);
         TypeName saveClassName = ClassName.get(GeneratorUtil.GENERATED_PACKAGE, GeneratorUtil.saveInterfaceName(name));
         TypeName restoreClassName = ClassName.get(GeneratorUtil.GENERATED_PACKAGE, GeneratorUtil.restoreInterfaceName(name));
 
-        TypeSpec.Builder prefsBuilder = TypeSpec.classBuilder(className)
+        TypeSpec.Builder prefsBuilder = TypeSpec.classBuilder(GeneratorUtil.prefsInstanceName(name))
                 .addModifiers(Modifier.PUBLIC)
                 .superclass(ParameterizedTypeName.get(GeneratorUtil.PREFS_CLASS, saveClassName, restoreClassName))
                 .addField(GeneratorUtil.CONTEXT_CLASS, "context", Modifier.PRIVATE)
@@ -113,56 +89,18 @@ public class Anny {
                 .addStatement("this.$N = $N", "context", "context")
                 .build();
 
-        MethodSpec save = MethodSpec.methodBuilder("save")
-                .addModifiers(Modifier.PUBLIC)
-                .addAnnotation(Override.class)
-                .returns(saveClassName)
-                .addStatement("return save")
-                .build();
-
-        MethodSpec saveAsync = MethodSpec.methodBuilder("saveAsync")
-                .addModifiers(Modifier.PUBLIC)
-                .addAnnotation(Override.class)
-                .returns(saveClassName)
-                .addStatement("return save")
-                .build();
-
-        MethodSpec restore = MethodSpec.methodBuilder("restore")
-                .addModifiers(Modifier.PUBLIC)
-                .addAnnotation(Override.class)
-                .returns(restoreClassName)
-                .addStatement("return restore")
-                .build();
-
-        MethodSpec clear = MethodSpec.methodBuilder("clear")
-                .addModifiers(Modifier.PUBLIC)
-                .addAnnotation(Override.class)
-                .returns(void.class)
-                .build();
-
-        MethodSpec context = MethodSpec.methodBuilder("getContext")
-                .addModifiers(Modifier.PROTECTED)
-                .addAnnotation(Override.class)
-                .returns(GeneratorUtil.CONTEXT_CLASS)
-                .addStatement("return context")
-                .build();
-
         prefsBuilder.addMethod(constructor);
-        prefsBuilder.addMethod(save);
-        prefsBuilder.addMethod(saveAsync);
-        prefsBuilder.addMethod(restore);
-        prefsBuilder.addMethod(clear);
-        prefsBuilder.addMethod(context);
+        prefsBuilder.addMethod(instantiateMethod("save", saveClassName, "return save"));
+        prefsBuilder.addMethod(instantiateMethod("saveAsync", saveClassName, "return save"));
+        prefsBuilder.addMethod(instantiateMethod("restore", restoreClassName, "return restore"));
+        prefsBuilder.addMethod(instantiateMethod("clear", TypeName.VOID));
+        prefsBuilder.addMethod(instantiateMethod("getContext", GeneratorUtil.CONTEXT_CLASS, "return context"));
 
-        TypeSpec typeSpec = prefsBuilder.build();
-
-        JavaFile javaFile = JavaFile.builder(GeneratorUtil.GENERATED_PACKAGE, typeSpec).build();
-        javaFile.writeTo(filer);
+        generate(filer, prefsBuilder.build());
     }
 
     private FieldSpec innerSaveInstance(TypeName name) {
-        TypeSpec.Builder innerClassBuilder = TypeSpec.anonymousClassBuilder("")
-                .addSuperinterface(name);
+        TypeSpec.Builder innerBuilder = TypeSpec.anonymousClassBuilder("").addSuperinterface(name);
 
         for (PrefField field : prefs) {
             MethodSpec method = MethodSpec.methodBuilder(field.name())
@@ -172,11 +110,11 @@ public class Anny {
                     .addParameter(field.fieldClass(), "value")
                     .addStatement("editor().put$N($S, value).apply()", field.methodName(), field.key())
                     .build();
-            innerClassBuilder.addMethod(method);
+            innerBuilder.addMethod(method);
         }
 
         return FieldSpec.builder(name, "save", Modifier.PRIVATE, Modifier.FINAL)
-                .initializer("$L", innerClassBuilder.build())
+                .initializer("$L", innerBuilder.build())
                 .build();
     }
 
@@ -197,5 +135,22 @@ public class Anny {
         return FieldSpec.builder(name, "restore", Modifier.PRIVATE, Modifier.FINAL)
                 .initializer("$L", innerClassBuilder.build())
                 .build();
+    }
+
+    private MethodSpec instantiateMethod(String name, TypeName returnType, String... statements) {
+        MethodSpec.Builder builder = MethodSpec.methodBuilder(name)
+                .addModifiers(Modifier.PUBLIC).addAnnotation(Override.class).returns(returnType);
+
+        if (statements != null)
+            for (String statement : statements) {
+                builder.addStatement(statement);
+            }
+        return builder.build();
+    }
+
+
+    private void generate(Filer filer, TypeSpec typeSpec) throws IOException {
+        JavaFile javaFile = JavaFile.builder(GeneratorUtil.GENERATED_PACKAGE, typeSpec).build();
+        javaFile.writeTo(filer);
     }
 }
