@@ -44,7 +44,9 @@ public class PrefsProcessor extends AbstractProcessor {
     private Filer filer;
     private Messager messager;
     private Map<String, Anny> map;
-    private static final List<Class<? extends Annotation>> classes = Arrays.asList(
+    private Adapter adapter;
+
+    private static final List<Class<? extends Annotation>> CLASSES = Arrays.asList(
             StringPref.class, IntPref.class,
             LongPref.class, FloatPref.class,
             BoolPref.class, StringSetPref.class
@@ -58,6 +60,7 @@ public class PrefsProcessor extends AbstractProcessor {
         filer = processingEnv.getFiler();
         messager = processingEnv.getMessager();
         map = new LinkedHashMap<>();
+        adapter = new Adapter();
     }
 
     @Override
@@ -86,8 +89,11 @@ public class PrefsProcessor extends AbstractProcessor {
                 error(element, "Only classes can be annotated with @%s", AnnyPref.class.getSimpleName());
                 return true;
             }
-            System.out.println("Got AnnyPref annotation for [" + element.getSimpleName().toString() + "] class!");
-            map.put(element.getSimpleName().toString(), new Anny(element.getSimpleName().toString()));
+
+            System.out.println("Got AnnyPref annotation for [" + elementUtils.getPackageOf(element).getQualifiedName() + "." + element.getSimpleName().toString() + "] class!");
+            Anny anny = new Anny(element.getSimpleName().toString());
+            map.put(element.getSimpleName().toString(), anny);
+            adapter.add(element.getSimpleName().toString(), anny.getPrefClassName());
         }
 
         searchAnnotations(roundEnv);
@@ -98,18 +104,19 @@ public class PrefsProcessor extends AbstractProcessor {
         return true;
     }
 
-    private void generate(){
-        for(Anny anny : map.values()){
-            try {
+    private void generate() {
+        try {
+            for (Anny anny : map.values()) {
                 anny.generateCode(filer);
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+            adapter.generateCode(filer);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     private void searchAnnotations(RoundEnvironment roundEnv) {
-        for (Class<? extends Annotation> cls : classes) {
+        for (Class<? extends Annotation> cls : CLASSES) {
             searchAnnotationClass(roundEnv, cls);
         }
     }

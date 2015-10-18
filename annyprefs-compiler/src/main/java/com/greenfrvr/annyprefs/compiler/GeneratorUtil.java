@@ -21,7 +21,6 @@ public class GeneratorUtil {
     public static final ClassName PREFS_CLASS = ClassName.get(PACKAGE, PREFS);
     public static final ClassName SAVE_CLASS = ClassName.get(PACKAGE, SAVE);
     public static final ClassName RESTORE_CLASS = ClassName.get(PACKAGE, RESTORE);
-
     public static final ClassName CONTEXT_CLASS = ClassName.get("android.content", "Context");
 
     public static final String METHOD_STRING = "String";

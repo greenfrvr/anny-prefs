@@ -9,6 +9,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.greenfrvr.annyprefs.Prefs;
+import com.greenfrvr.annyprefs.compiled.PrefsAdapter;
 import com.greenfrvr.annyprefs.compiled.RestoreUser;
 import com.greenfrvr.annyprefs.compiled.SaveUser;
 import com.greenfrvr.annyprefs.compiled.UserPrefs;
@@ -31,10 +33,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-
                 System.out.println("RESTORED: " + restoreUser.username() + " || " + restoreUser.email() + " || " + restoreUser.age());
+                System.out.println(User.class.getCanonicalName());
             }
         });
+
+        PrefsAdapter.user(this);
 
         UserPrefs prefs = new UserPrefs(this);
         saveUser = prefs.save();

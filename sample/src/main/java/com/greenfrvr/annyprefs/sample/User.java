@@ -8,8 +8,6 @@ import com.greenfrvr.annyprefs.annotation.IntPref;
 import com.greenfrvr.annyprefs.annotation.LongPref;
 import com.greenfrvr.annyprefs.annotation.StringPref;
 
-import java.util.Date;
-
 /**
  * Created by greenfrvr
  */

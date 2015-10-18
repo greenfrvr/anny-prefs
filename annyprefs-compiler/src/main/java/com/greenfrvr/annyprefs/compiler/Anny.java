@@ -50,6 +50,10 @@ public class Anny {
         generatePrefsInstance(filer);
     }
 
+    public String getPrefClassName() {
+        return GeneratorUtil.prefsInstanceName(name);
+    }
+
     private void generateSaveInterface(Filer filer) throws IOException {
         TypeSpec.Builder interfaceBuilder = TypeSpec.interfaceBuilder(GeneratorUtil.saveInterfaceName(name))
                 .addModifiers(Modifier.PUBLIC).addSuperinterface(GeneratorUtil.SAVE_CLASS);
@@ -147,7 +151,6 @@ public class Anny {
             }
         return builder.build();
     }
-
 
     private void generate(Filer filer, TypeSpec typeSpec) throws IOException {
         JavaFile javaFile = JavaFile.builder(GeneratorUtil.GENERATED_PACKAGE, typeSpec).build();
