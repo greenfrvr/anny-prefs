@@ -13,8 +13,9 @@ public class GeneratorUtil {
 
     public static final String SAVE = "Save";
     public static final String RESTORE = "Restore";
+    public static final String REMOVE = "Remove";
     public static final String PREFS = "Prefs";
-    public static final String SAVE_METHOD = "SaveMethod";
+    public static final String SAVE_METHOD = "TransactionMethod";
 
     public static final String PACKAGE = "com.greenfrvr.annyprefs";
     public static final String GENERATED_PACKAGE = PACKAGE + ".compiled";
@@ -22,6 +23,7 @@ public class GeneratorUtil {
     public static final ClassName PREFS_CLASS = ClassName.get(PACKAGE, PREFS);
     public static final ClassName SAVE_CLASS = ClassName.get(PACKAGE, SAVE);
     public static final ClassName RESTORE_CLASS = ClassName.get(PACKAGE, RESTORE);
+    public static final ClassName REMOVE_CLASS = ClassName.get(PACKAGE, REMOVE);
     public static final ClassName CONTEXT_CLASS = ClassName.get("android.content", "Context");
 
     public static final ClassName SAVE_METHOD_INTERFACE = ClassName.get(PACKAGE, SAVE_METHOD);
@@ -45,8 +47,16 @@ public class GeneratorUtil {
         return RESTORE + name;
     }
 
+    public static String removeInterfaceName(String name) {
+        return REMOVE + name;
+    }
+
     public static String prefsInstanceName(String name) {
         return name + PREFS;
+    }
+
+    public static String prefsKey(String name) {
+        return name.toLowerCase() + "_" + PREFS.toLowerCase();
     }
 
     public static MethodSpec saveMethodInstance(PrefField field) {
@@ -61,6 +71,13 @@ public class GeneratorUtil {
         return MethodSpec.methodBuilder(field.name())
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                 .returns(field.fieldClass())
+                .build();
+    }
+
+    public static MethodSpec removeMethodInstance(PrefField field) {
+        return MethodSpec.methodBuilder(field.name())
+                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                .returns(SAVE_METHOD_INTERFACE)
                 .build();
     }
 }
