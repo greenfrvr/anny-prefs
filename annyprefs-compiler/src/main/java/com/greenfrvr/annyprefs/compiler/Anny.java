@@ -25,10 +25,12 @@ import javax.lang.model.element.Modifier;
 public class Anny {
 
     private String name;
+    private String prefsName;
     private List<PrefField> prefs;
 
-    public Anny(String name) {
+    public Anny(String name, String prefsName) {
         this.name = name;
+        this.prefsName =prefsName;
         this.prefs = new ArrayList<>();
     }
 
@@ -96,7 +98,8 @@ public class Anny {
                 .addMethod(instantiateMethod("save", saveClassName, "return save"))
                 .addMethod(instantiateMethod("restore", restoreClassName, "return restore"))
                 .addMethod(instantiateMethod("clear", TypeName.VOID))
-                .addMethod(instantiateMethod("getContext", GeneratorUtil.CONTEXT_CLASS, "return context"));
+                .addMethod(instantiateMethod("getContext", GeneratorUtil.CONTEXT_CLASS, "return context"))
+                .addMethod(instantiateMethod("name", ClassName.get(String.class), "return \"" + prefsName + "\""));
 
         prefsBuilder.addField(innerSaveInstance(saveClassName))
                 .addField(innerRestoreInstance(restoreClassName));

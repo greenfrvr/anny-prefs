@@ -12,6 +12,9 @@ public abstract class Prefs<S extends Save, R extends Restore> implements Prefer
     private SharedPreferences.Editor editor;
 
     @Override
+    public abstract String name();
+
+    @Override
     public abstract S save();
 
     @Override
@@ -34,7 +37,10 @@ public abstract class Prefs<S extends Save, R extends Restore> implements Prefer
     }
 
     protected SharedPreferences shared() {
-        return PreferenceManager.getDefaultSharedPreferences(getContext());
+        if (name().isEmpty()) {
+            return PreferenceManager.getDefaultSharedPreferences(getContext());
+        }
+        return getContext().getSharedPreferences(getContext().getPackageName() + "_anny_" + name(), Context.MODE_PRIVATE);
     }
 
     protected SharedPreferences.Editor editor() {

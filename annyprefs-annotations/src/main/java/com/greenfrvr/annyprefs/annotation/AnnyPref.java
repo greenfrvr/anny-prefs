@@ -12,4 +12,5 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 @Target(TYPE)
 @Retention(CLASS)
 public @interface AnnyPref {
+    String name() default "";
 }

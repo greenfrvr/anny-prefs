@@ -5,6 +5,8 @@ package com.greenfrvr.annyprefs;
  */
 public interface Preferences<S extends Save, R extends Restore> {
 
+    String name();
+
     S save();
 
     R restore();
