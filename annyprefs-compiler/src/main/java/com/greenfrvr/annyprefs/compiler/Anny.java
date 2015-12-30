@@ -83,41 +83,48 @@ public class Anny {
         TypeSpec.Builder prefsBuilder = TypeSpec.classBuilder(GeneratorUtil.prefsInstanceName(name))
                 .addModifiers(Modifier.PUBLIC)
                 .superclass(ParameterizedTypeName.get(GeneratorUtil.PREFS_CLASS, saveClassName, restoreClassName))
-                .addField(GeneratorUtil.CONTEXT_CLASS, "context", Modifier.PRIVATE)
-                .addField(innerSaveInstance(saveClassName))
-                .addField(innerRestoreInstance(restoreClassName));
+                .addField(prefsKeyField())
+                .addField(GeneratorUtil.CONTEXT_CLASS, "context", Modifier.PRIVATE);
 
         MethodSpec constructor = MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
+                .addModifiers(Modifier.PROTECTED)
                 .addParameter(GeneratorUtil.CONTEXT_CLASS, "context")
-                .addStatement("this.$N = $N", "context", "context")
+                .addStatement("this.$N = $N.getApplicationContext()", "context", "context")
                 .build();
 
-        prefsBuilder.addMethod(constructor);
-        prefsBuilder.addMethod(instantiateMethod("save", saveClassName, "return save"));
-        prefsBuilder.addMethod(instantiateMethod("saveAsync", saveClassName, "return save"));
-        prefsBuilder.addMethod(instantiateMethod("restore", restoreClassName, "return restore"));
-        prefsBuilder.addMethod(instantiateMethod("clear", TypeName.VOID));
-        prefsBuilder.addMethod(instantiateMethod("getContext", GeneratorUtil.CONTEXT_CLASS, "return context"));
+        prefsBuilder.addMethod(constructor)
+                .addMethod(instantiateMethod("save", saveClassName, "return save"))
+                .addMethod(instantiateMethod("restore", restoreClassName, "return restore"))
+                .addMethod(instantiateMethod("clear", TypeName.VOID))
+                .addMethod(instantiateMethod("getContext", GeneratorUtil.CONTEXT_CLASS, "return context"));
+
+        prefsBuilder.addField(innerSaveInstance(saveClassName))
+                .addField(innerRestoreInstance(restoreClassName));
 
         generate(filer, prefsBuilder.build());
     }
 
-    private FieldSpec innerSaveInstance(TypeName name) {
-        TypeSpec.Builder innerBuilder = TypeSpec.anonymousClassBuilder("").addSuperinterface(name);
+    private FieldSpec prefsKeyField() {
+        return FieldSpec.builder(String.class, "KEY", Modifier.STATIC, Modifier.FINAL)
+                .initializer("$S", name.toLowerCase() + "_prefs")
+                .build();
+    }
+
+    private FieldSpec innerSaveInstance(TypeName typeName) {
+        TypeSpec.Builder innerBuilder = TypeSpec.anonymousClassBuilder("").addSuperinterface(typeName);
 
         for (PrefField field : prefs) {
             MethodSpec method = MethodSpec.methodBuilder(field.name())
                     .addModifiers(Modifier.PUBLIC)
                     .addAnnotation(Override.class)
-                    .returns(void.class)
+                    .returns(GeneratorUtil.SAVE_METHOD_INTERFACE)
                     .addParameter(field.fieldClass(), "value")
-                    .addStatement("editor().put$N($S, value).apply()", field.methodName(), field.key())
+                    .addStatement("editor().put$N($S, value);\nreturn $L.this", field.methodName(), field.key(), GeneratorUtil.prefsInstanceName(name))
                     .build();
             innerBuilder.addMethod(method);
         }
 
-        return FieldSpec.builder(name, "save", Modifier.PRIVATE, Modifier.FINAL)
+        return FieldSpec.builder(typeName, "save", Modifier.PRIVATE, Modifier.FINAL)
                 .initializer("$L", innerBuilder.build())
                 .build();
     }

@@ -14,6 +14,7 @@ public class GeneratorUtil {
     public static final String SAVE = "Save";
     public static final String RESTORE = "Restore";
     public static final String PREFS = "Prefs";
+    public static final String SAVE_METHOD = "SaveMethod";
 
     public static final String PACKAGE = "com.greenfrvr.annyprefs";
     public static final String GENERATED_PACKAGE = PACKAGE + ".compiled";
@@ -23,11 +24,18 @@ public class GeneratorUtil {
     public static final ClassName RESTORE_CLASS = ClassName.get(PACKAGE, RESTORE);
     public static final ClassName CONTEXT_CLASS = ClassName.get("android.content", "Context");
 
+    public static final ClassName SAVE_METHOD_INTERFACE = ClassName.get(PACKAGE, SAVE_METHOD);
+
     public static final String METHOD_STRING = "String";
     public static final String METHOD_BOOLEAN = "Boolean";
     public static final String METHOD_INT = "Int";
     public static final String METHOD_FLOAT = "Float";
     public static final String METHOD_LONG = "Long";
+
+    public static final String ADAPTER_PREFS_INSTANCE =
+            "if (!PREFS.containsKey($L.KEY)) " +
+            "{\n\tPREFS.put($L.KEY, new $T(context)); \n}" +
+            "\nreturn ($T) PREFS.get($L.KEY);\n";
 
     public static String saveInterfaceName(String name) {
         return SAVE + name;
@@ -44,7 +52,7 @@ public class GeneratorUtil {
     public static MethodSpec saveMethodInstance(PrefField field) {
         return MethodSpec.methodBuilder(field.name())
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                .returns(void.class)
+                .returns(SAVE_METHOD_INTERFACE)
                 .addParameter(field.fieldClass(), "value")
                 .build();
     }

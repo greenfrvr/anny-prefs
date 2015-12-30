@@ -36,11 +36,13 @@ public class Adapter {
                 .addField(getClassesField());
 
         for (String key : prefsMap.keySet()) {
+            ClassName className = ClassName.get(GeneratorUtil.GENERATED_PACKAGE, prefsMap.get(key));
+
             MethodSpec method = MethodSpec.methodBuilder(key.toLowerCase())
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                     .returns(ClassName.get(GeneratorUtil.GENERATED_PACKAGE, prefsMap.get(key)))
                     .addParameter(GeneratorUtil.CONTEXT_CLASS, "context")
-                    .addCode("return new $T(context);", ClassName.get(GeneratorUtil.GENERATED_PACKAGE, prefsMap.get(key)))
+                    .addCode(GeneratorUtil.ADAPTER_PREFS_INSTANCE, prefsMap.get(key), prefsMap.get(key), className, className, prefsMap.get(key))
                     .build();
             typeBuilder.addMethod(method);
         }
@@ -49,9 +51,9 @@ public class Adapter {
     }
 
     private FieldSpec getClassesField() {
-        return FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(Type.class), GeneratorUtil.PREFS_CLASS), "PREFS")
+        return FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class), GeneratorUtil.PREFS_CLASS), "PREFS")
                 .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                .initializer("new $T<>()", HashMap.class)
+                .initializer("new $T<>($L)", HashMap.class, prefsMap.size())
                 .build();
     }
 

@@ -90,10 +90,11 @@ public class PrefsProcessor extends AbstractProcessor {
                 return true;
             }
 
-            System.out.println("Got AnnyPref annotation for [" + elementUtils.getPackageOf(element).getQualifiedName() + "." + element.getSimpleName().toString() + "] class!");
-            Anny anny = new Anny(element.getSimpleName().toString());
-            map.put(element.getSimpleName().toString(), anny);
-            adapter.add(element.getSimpleName().toString(), anny.getPrefClassName());
+            String className = element.getSimpleName().toString();
+            System.out.println("Got AnnyPref annotation for [" + elementUtils.getPackageOf(element).getQualifiedName() + "." + className + "] class!");
+            Anny anny = new Anny(className);
+            map.put(className, anny);
+            adapter.add(className, anny.getPrefClassName());
         }
 
         searchAnnotations(roundEnv);
