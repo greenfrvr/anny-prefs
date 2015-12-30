@@ -1,6 +1,7 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.greenfrvr.annyprefs.annotation.BoolPref;
+import com.greenfrvr.annyprefs.annotation.StringPref;
 import com.greenfrvr.annyprefs.compiler.GeneratorUtil;
 
 import javax.lang.model.element.Element;
@@ -31,7 +32,11 @@ public class BooleanField implements PrefField<Boolean> {
 
     @Override
     public String key() {
-        return el.getAnnotation(BoolPref.class).key();
+        String key = el.getAnnotation(BoolPref.class).key();
+        if (key.isEmpty()) {
+            key = name();
+        }
+        return key;
     }
 
     @Override

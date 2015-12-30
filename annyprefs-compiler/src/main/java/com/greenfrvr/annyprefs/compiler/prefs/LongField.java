@@ -1,6 +1,7 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.greenfrvr.annyprefs.annotation.LongPref;
+import com.greenfrvr.annyprefs.annotation.StringPref;
 import com.greenfrvr.annyprefs.compiler.GeneratorUtil;
 
 import javax.lang.model.element.Element;
@@ -31,7 +32,11 @@ public class LongField implements PrefField<Long> {
 
     @Override
     public String key() {
-        return el.getAnnotation(LongPref.class).key();
+        String key = el.getAnnotation(LongPref.class).key();
+        if (key.isEmpty()) {
+            key = name();
+        }
+        return key;
     }
 
     @Override

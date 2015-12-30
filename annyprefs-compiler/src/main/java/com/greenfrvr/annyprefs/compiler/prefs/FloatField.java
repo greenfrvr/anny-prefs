@@ -1,6 +1,7 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.greenfrvr.annyprefs.annotation.FloatPref;
+import com.greenfrvr.annyprefs.annotation.StringPref;
 import com.greenfrvr.annyprefs.compiler.GeneratorUtil;
 
 import javax.lang.model.element.Element;
@@ -31,7 +32,11 @@ public class FloatField implements PrefField<Float> {
 
     @Override
     public String key() {
-        return el.getAnnotation(FloatPref.class).key();
+        String key = el.getAnnotation(FloatPref.class).key();
+        if (key.isEmpty()) {
+            key = name();
+        }
+        return key;
     }
 
     @Override

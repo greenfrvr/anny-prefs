@@ -31,7 +31,11 @@ public class StringField implements PrefField<String> {
 
     @Override
     public String key() {
-        return el.getAnnotation(StringPref.class).key();
+        String key = el.getAnnotation(StringPref.class).key();
+        if (key.isEmpty()) {
+            key = name();
+        }
+        return key;
     }
 
     @Override
