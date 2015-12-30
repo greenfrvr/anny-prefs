@@ -1,4 +1,4 @@
-package com.greenfrvr.annyprefs.sample;
+package com.greenfrvr.annyprefs.sample.prefs;
 
 
 import com.greenfrvr.annyprefs.annotation.AnnyPref;
@@ -11,25 +11,25 @@ import com.greenfrvr.annyprefs.annotation.StringPref;
 /**
  * Created by greenfrvr
  */
-@AnnyPref
+@AnnyPref(name = "user")
 public interface User {
-
-    @StringPref(key = "user_name", value = "greenfrvr")
-    void username();
-
-    @StringPref(key = "user_email", value = "greenfrvr@gmail.com")
-    void email();
 
     @BoolPref(key = "user_first_launch", value = true)
     void firstLaunch();
 
-    @FloatPref(key = "user_rate", value = 0.0f)
+    @StringPref(key = "user_name", value = "name")
+    void username();
+
+    @StringPref(key = "user_surname", value = "surname")
+    void surname();
+
+    @StringPref(value = "email@gmail.com")
+    void email();
+
+    @FloatPref(key = "user_rate")
     void rate();
 
-    @LongPref(key = "user_last_visit", value = 0)
-    void lastVisit();
-
-    @IntPref(key = "user_age", value = 16)
+    @IntPref(key = "user_age")
     void age();
 
 }

@@ -5,20 +5,23 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
-import com.greenfrvr.annyprefs.Prefs;
+import com.greenfrvr.annyprefs.compiled.ConfigPrefs;
 import com.greenfrvr.annyprefs.compiled.PrefsAdapter;
+import com.greenfrvr.annyprefs.compiled.RestoreConfig;
 import com.greenfrvr.annyprefs.compiled.RestoreUser;
 import com.greenfrvr.annyprefs.compiled.SaveUser;
 import com.greenfrvr.annyprefs.compiled.UserPrefs;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.Date;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     SaveUser saveUser;
     RestoreUser restoreUser;
+
+    RestoreConfig restoreConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,50 +30,44 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        final ConfigPrefs config = PrefsAdapter.config(this);
+        restoreConfig = config.restore();
+
+        config.save().lastVisit(new Date().getTime()).async();
+        config.save().visits(config.restore().visits() + 1).async();
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                System.out.println("RESTORED: " + restoreUser.username() + " || " + restoreUser.email() + " || " + restoreUser.age());
-                System.out.println(User.class.getCanonicalName());
-            }
-        });
+        fab.setOnClickListener(this);
 
-        PrefsAdapter.user(this);
+        initUserPrefs();
+        saveUserInfo();
+    }
 
-        UserPrefs prefs = new UserPrefs(this);
-        saveUser = prefs.save();
+    private void initUserPrefs() {
+        final UserPrefs prefs = PrefsAdapter.user(this);
         restoreUser = prefs.restore();
+        saveUser = prefs.save();
+    }
 
+    private void saveUserInfo() {
         if(restoreUser.firstLaunch()){
+            System.out.println("SAVE PREFS");
             saveUser.username("beingericgreen");
             saveUser.email("being.eric.green@gmail.com");
             saveUser.age(22);
-            saveUser.firstLaunch(false);
+            saveUser.firstLaunch(false).async();
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+    public void onClick(View v) {
+        System.out.println("SAVED: " + PrefsAdapter.config(this).save().subscribed(!PrefsAdapter.config(this).restore().subscribed()).sync());
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        Snackbar.make(v, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        System.out.println("USER RESTORED: " + restoreUser.username() + " || " + restoreUser.email() + " || " + restoreUser.age());
+        System.out.println("CONFIG RESTORED: " + restoreConfig.lastVisit() + " || " + restoreConfig.subscribed() + " || " + restoreConfig.visits() + " || " + restoreConfig.query());
+        PrefsAdapter.user(this).remove().age();
+        PrefsAdapter.user(this).remove().email().async();
     }
 }
