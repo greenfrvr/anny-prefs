@@ -1,8 +1,7 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.greenfrvr.annyprefs.annotation.FloatPref;
-import com.greenfrvr.annyprefs.annotation.StringPref;
-import com.greenfrvr.annyprefs.compiler.GeneratorUtil;
+import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
 
 import javax.lang.model.element.Element;
 
@@ -51,7 +50,7 @@ public class FloatField implements PrefField<Float> {
 
     @Override
     public String methodName() {
-        return GeneratorUtil.METHOD_FLOAT;
+        return GeneratorUtil.FLOAT;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.greenfrvr.annyprefs.compiler;
 
+import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -8,7 +9,6 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,11 +36,11 @@ public class Adapter {
                 .addField(getClassesField());
 
         for (String key : prefsMap.keySet()) {
-            ClassName className = ClassName.get(GeneratorUtil.GENERATED_PACKAGE, prefsMap.get(key));
+            ClassName className = GeneratorUtil.className(prefsMap.get(key));
 
             MethodSpec method = MethodSpec.methodBuilder(key.toLowerCase())
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                    .returns(ClassName.get(GeneratorUtil.GENERATED_PACKAGE, prefsMap.get(key)))
+                    .returns(className)
                     .addParameter(GeneratorUtil.CONTEXT_CLASS, "context")
                     .addCode(GeneratorUtil.ADAPTER_PREFS_INSTANCE, prefsMap.get(key), prefsMap.get(key), className, className, prefsMap.get(key))
                     .build();
