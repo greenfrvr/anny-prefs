@@ -29,11 +29,13 @@ public class Anny {
 
     private String name;
     private String prefsName;
+    private String packageName;
     private List<PrefField> prefs;
 
-    public Anny(String name, String prefsName) {
+    public Anny(String name, String prefsName, String packageName) {
         this.name = name;
         this.prefsName = prefsName;
+        this.packageName = packageName;
         this.prefs = new ArrayList<>();
     }
 
@@ -104,7 +106,7 @@ public class Anny {
         TypeSpec.Builder builder = TypeSpec.classBuilder(GeneratorUtil.prefsInstanceName(name))
                 .addModifiers(Modifier.PUBLIC)
                 .superclass(ParameterizedTypeName.get(GeneratorUtil.PREFS_CLASS, saveClassName, restoreClassName, removeClassName))
-                .addField(FieldsUtils.field("KEY", TypeName.get(String.class), GeneratorUtil.prefsKey(name)))
+                .addField(FieldsUtils.field("KEY", TypeName.get(String.class), GeneratorUtil.prefsKey(packageName, name)))
                 .addField(GeneratorUtil.CONTEXT_CLASS, "context", Modifier.PRIVATE);
 
         MethodSpec constructor = MethodSpec.constructorBuilder()

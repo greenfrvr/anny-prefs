@@ -61,8 +61,8 @@ public class GeneratorUtil {
         return className(removeInterfaceName(name));
     }
 
-    public static String prefsKey(String name) {
-        return name.toLowerCase() + "_" + PREFS.toLowerCase();
+    public static String prefsKey(String packageName, String name) {
+        return packageName + "." + name.toLowerCase() + "_" + PREFS.toLowerCase();
     }
 
     public static ClassName className(String name) {

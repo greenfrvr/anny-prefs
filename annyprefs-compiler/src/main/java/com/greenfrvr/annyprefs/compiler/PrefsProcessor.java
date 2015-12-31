@@ -91,8 +91,9 @@ public class PrefsProcessor extends AbstractProcessor {
             }
 
             String className = element.getSimpleName().toString();
-            System.out.println("Got AnnyPref annotation for [" + elementUtils.getPackageOf(element).getQualifiedName() + "." + className + "] class!");
-            Anny anny = new Anny(className, element.getAnnotation(AnnyPref.class).name());
+            String packageName = elementUtils.getPackageOf(element).toString();
+            System.out.println("Got AnnyPref annotation for [" + elementUtils.getPackageOf(element).getQualifiedName() + "." + className + "] class!" + packageName);
+            Anny anny = new Anny(className, element.getAnnotation(AnnyPref.class).name(), packageName);
             map.put(className, anny);
             adapter.add(className, anny.getPrefClassName());
         }
@@ -125,8 +126,9 @@ public class PrefsProcessor extends AbstractProcessor {
     private void searchAnnotationClass(RoundEnvironment roundEnv, Class<? extends Annotation> cls) {
         System.out.println(String.format("Scanning for %s annotation", cls.getSimpleName()));
         for (Element el : roundEnv.getElementsAnnotatedWith(cls)) {
-            if (map.get(el.getEnclosingElement().getSimpleName().toString()) != null) {
-                map.get(el.getEnclosingElement().getSimpleName().toString()).addElement(el, cls);
+            String key = el.getEnclosingElement().getSimpleName().toString();
+            if (map.get(key) != null) {
+                map.get(key).addElement(el, cls);
             }
         }
     }
