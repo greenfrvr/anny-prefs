@@ -33,8 +33,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final ConfigPrefs config = PrefsAdapter.config(this);
         restoreConfig = config.restore();
 
-        config.save().lastVisit(new Date().getTime()).async();
-        config.save().visits(config.restore().visits() + 1).async();
+        config.save()
+                .lastVisit(new Date().getTime())
+                .visits(config.restore().visits() + 1)
+                .async();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(this);
@@ -51,11 +53,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void saveUserInfo() {
         if(restoreUser.firstLaunch()){
-            System.out.println("SAVE PREFS");
-            saveUser.username("beingericgreen");
-            saveUser.email("being.eric.green@gmail.com");
-            saveUser.age(22);
-            saveUser.firstLaunch(false).async();
+            saveUser.username("beingericgreen")
+                    .age(22)
+                    .email("being.eric.green@gmail.com")
+                    .firstLaunch(false)
+                    .async();
         }
     }
 
@@ -67,7 +69,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         System.out.println("USER RESTORED: " + restoreUser.username() + " || " + restoreUser.email() + " || " + restoreUser.age());
         System.out.println("CONFIG RESTORED: " + restoreConfig.lastVisit() + " || " + restoreConfig.subscribed() + " || " + restoreConfig.visits() + " || " + restoreConfig.query());
-        PrefsAdapter.user(this).remove().age();
-        PrefsAdapter.user(this).remove().email().async();
     }
 }
