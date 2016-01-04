@@ -1,10 +1,14 @@
 package com.greenfrvr.annyprefs.compiler.utils;
 
 import com.greenfrvr.annyprefs.compiler.prefs.PrefField;
+import com.greenfrvr.annyprefs.compiler.prefs.StringSetField;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import javax.lang.model.element.Modifier;
 
@@ -12,6 +16,15 @@ import javax.lang.model.element.Modifier;
  * Created by greenfrvr
  */
 public class MethodsUtil {
+
+    public static void makeSetRestoreMethod(MethodSpec.Builder b, StringSetField field) {
+        if (field.value().isEmpty()) {
+            b.addStatement(GeneratorUtil.PREFS_RESTORE_SET_EMPTY_VALUE, field.methodName(), field.key(), null);
+        } else {
+            TypeName setType = ParameterizedTypeName.get(HashSet.class, String.class);
+            b.addStatement(GeneratorUtil.restoreSetStatement(field), field.methodName(), field.key(), setType, Arrays.class);
+        }
+    }
 
     public static MethodSpec saveMethodInstance(String name, PrefField field) {
         return builder(field.name(), GeneratorUtil.saveInterfaceClassName(name), true)

@@ -1,7 +1,13 @@
 package com.greenfrvr.annyprefs.compiler.utils;
 
+import com.greenfrvr.annyprefs.compiler.prefs.PrefField;
+import com.greenfrvr.annyprefs.compiler.prefs.StringSetField;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -40,6 +46,7 @@ public class GeneratorUtil {
     public static final String PREFS_PUT_VALUE = "editor().put$N($S, value);\nreturn this";
     public static final String PREFS_RESTORE_VALUE = "return shared().get$N($S, $T.valueOf($S))";
     public static final String PREFS_RESTORE_SET_VALUE = "return shared().get$N($S, new $T($T.asList(0)))";
+    public static final String PREFS_RESTORE_SET_EMPTY_VALUE = "return shared().get$N($S, $L)";
     public static final String PREFS_REMOVE_VALUE = "editor().remove($S);\nreturn this";
 
     public static String prefsInstanceName(String name) {
@@ -74,9 +81,8 @@ public class GeneratorUtil {
         return ClassName.get(GeneratorUtil.GENERATED_PACKAGE, name);
     }
 
-    public static String prepareSetRestoreString(Object strings) {
-        @SuppressWarnings("unchecked")
-        Iterator<String> it = ((Set<String>)strings).iterator();
+    public static String restoreSetStatement(StringSetField field) {
+        Iterator<String> it = field.value().iterator();
         StringBuilder builder = new StringBuilder();
 
         while (it.hasNext()) {

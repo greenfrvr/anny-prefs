@@ -1,7 +1,9 @@
 package com.greenfrvr.annyprefs.compiler;
 
+import com.greenfrvr.annyprefs.annotation.StringSetPref;
 import com.greenfrvr.annyprefs.compiler.prefs.PrefField;
 import com.greenfrvr.annyprefs.compiler.prefs.PrefFieldFactory;
+import com.greenfrvr.annyprefs.compiler.prefs.StringSetField;
 import com.greenfrvr.annyprefs.compiler.utils.FieldsUtils;
 import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
 import com.greenfrvr.annyprefs.compiler.utils.MethodsUtil;
@@ -153,9 +155,8 @@ public class Anny {
 
         for (PrefField field : prefs) {
             MethodSpec.Builder method = MethodsUtil.builder(field.name(), field.fieldClass(), false);
-            if (field.fieldClass().equals(ParameterizedTypeName.get(Set.class, String.class))) {
-                method.addStatement(GeneratorUtil.prepareSetRestoreString(field.value()), field.methodName(), field.key(),
-                        ParameterizedTypeName.get(HashSet.class, String.class), Arrays.class);
+            if (field instanceof StringSetField) {
+                MethodsUtil.makeSetRestoreMethod(method, (StringSetField) field);
             } else {
                 method.addStatement(GeneratorUtil.PREFS_RESTORE_VALUE, field.methodName(), field.key(), field.fieldClass(), field.value().toString());
             }
