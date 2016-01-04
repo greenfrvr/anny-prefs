@@ -2,13 +2,16 @@ package com.greenfrvr.annyprefs.compiler.utils;
 
 import com.squareup.javapoet.ClassName;
 
+import java.util.Iterator;
+import java.util.Set;
+
 /**
  * Created by greenfrvr
  */
 public class GeneratorUtil {
 
     public static final String PACKAGE = "com.greenfrvr.annyprefs";
-    public static final String GENERATED_PACKAGE = PACKAGE + ".compiled";
+    public static final String GENERATED_PACKAGE = PACKAGE;
 
     public static final String SAVE = "Save";
     public static final String RESTORE = "Restore";
@@ -26,6 +29,7 @@ public class GeneratorUtil {
     public static final String INT = "Int";
     public static final String FLOAT = "Float";
     public static final String LONG = "Long";
+    public static final String STRING_SET = "StringSet";
 
     public static final String ADAPTER_PREFS_INSTANCE =
             "if (!PREFS.containsKey($L.KEY)) " +
@@ -35,6 +39,7 @@ public class GeneratorUtil {
     public static final String PREFS_CONSTRUCTOR = "this.$N = $N.getApplicationContext()";
     public static final String PREFS_PUT_VALUE = "editor().put$N($S, value);\nreturn this";
     public static final String PREFS_RESTORE_VALUE = "return shared().get$N($S, $T.valueOf($S))";
+    public static final String PREFS_RESTORE_SET_VALUE = "return shared().get$N($S, new $T($T.asList(0)))";
     public static final String PREFS_REMOVE_VALUE = "editor().remove($S);\nreturn this";
 
     public static String prefsInstanceName(String name) {
@@ -67,5 +72,18 @@ public class GeneratorUtil {
 
     public static ClassName className(String name) {
         return ClassName.get(GeneratorUtil.GENERATED_PACKAGE, name);
+    }
+
+    public static String prepareSetRestoreString(Object strings) {
+        @SuppressWarnings("unchecked")
+        Iterator<String> it = ((Set<String>)strings).iterator();
+        StringBuilder builder = new StringBuilder();
+
+        while (it.hasNext()) {
+            builder.append("\"").append(it.next()).append("\"");
+            if (it.hasNext()) builder.append(", ");
+        }
+
+        return PREFS_RESTORE_SET_VALUE.replaceAll("0", builder.toString());
     }
 }

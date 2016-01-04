@@ -5,6 +5,7 @@ import com.greenfrvr.annyprefs.annotation.FloatPref;
 import com.greenfrvr.annyprefs.annotation.IntPref;
 import com.greenfrvr.annyprefs.annotation.LongPref;
 import com.greenfrvr.annyprefs.annotation.StringPref;
+import com.greenfrvr.annyprefs.annotation.StringSetPref;
 
 import java.lang.annotation.Annotation;
 
@@ -33,6 +34,10 @@ public class PrefFieldFactory {
 
         if (cls.equals(BoolPref.class)) {
             return new BooleanField();
+        }
+
+        if (cls.equals(StringSetPref.class)) {
+            return new StringSetField();
         }
 
         return null;

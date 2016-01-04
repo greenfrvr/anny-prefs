@@ -2,6 +2,8 @@ package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.greenfrvr.annyprefs.annotation.BoolPref;
 import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
 
 import javax.lang.model.element.Element;
 
@@ -44,8 +46,8 @@ public class BooleanField implements PrefField<Boolean> {
     }
 
     @Override
-    public Class<Boolean> fieldClass() {
-        return Boolean.class;
+    public TypeName fieldClass() {
+        return ClassName.get(Boolean.class);
     }
 
     @Override

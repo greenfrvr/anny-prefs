@@ -15,4 +15,6 @@ public @interface StringSetPref {
 
     String key() default "";
 
+    String[] value() default {};
+
 }

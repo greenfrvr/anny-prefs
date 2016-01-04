@@ -7,7 +7,7 @@ import android.preference.PreferenceManager;
 /**
  * Created by greenfrvr
  */
-public abstract class Prefs<S extends Save, R extends Restore, D extends Remove> implements Preferences<S, R, D>, TransactionMethod {
+abstract class Prefs<S extends Save, R extends Restore, D extends Remove> implements Preferences<S, R, D>, TransactionMethod {
 
     private SharedPreferences.Editor editor;
 

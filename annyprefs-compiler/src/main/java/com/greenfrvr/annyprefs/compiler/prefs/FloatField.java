@@ -2,6 +2,8 @@ package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.greenfrvr.annyprefs.annotation.FloatPref;
 import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
 
 import javax.lang.model.element.Element;
 
@@ -44,8 +46,8 @@ public class FloatField implements PrefField<Float> {
     }
 
     @Override
-    public Class<Float> fieldClass() {
-        return Float.class;
+    public TypeName fieldClass() {
+        return ClassName.get(Float.class);
     }
 
     @Override

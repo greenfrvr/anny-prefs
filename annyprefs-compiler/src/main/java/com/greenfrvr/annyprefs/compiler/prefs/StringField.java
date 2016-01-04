@@ -2,6 +2,8 @@ package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.greenfrvr.annyprefs.annotation.StringPref;
 import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
 
 import javax.lang.model.element.Element;
 
@@ -44,8 +46,8 @@ public class StringField implements PrefField<String> {
     }
 
     @Override
-    public Class<String> fieldClass() {
-        return String.class;
+    public TypeName fieldClass() {
+        return ClassName.get(String.class);
     }
 
     @Override

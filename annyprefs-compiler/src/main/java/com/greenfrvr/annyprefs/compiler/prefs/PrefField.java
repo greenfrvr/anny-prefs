@@ -1,5 +1,7 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
+import com.squareup.javapoet.TypeName;
+
 import javax.lang.model.element.Element;
 
 /**
@@ -15,7 +17,7 @@ public interface PrefField<T> {
 
     T value();
 
-    Class<T> fieldClass();
+    TypeName fieldClass();
 
     String methodName();
 }

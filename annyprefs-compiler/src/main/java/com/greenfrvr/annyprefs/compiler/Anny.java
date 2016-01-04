@@ -16,7 +16,10 @@ import com.squareup.javapoet.TypeSpec;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Element;
@@ -149,10 +152,15 @@ public class Anny {
         TypeSpec.Builder builder = TypeSpec.anonymousClassBuilder("").addSuperinterface(type);
 
         for (PrefField field : prefs) {
-            MethodSpec method = MethodsUtil.builder(field.name(), field.fieldClass(), false)
-                    .addStatement(GeneratorUtil.PREFS_RESTORE_VALUE, field.methodName(), field.key(), field.fieldClass(), field.value().toString())
-                    .build();
-            builder.addMethod(method);
+            MethodSpec.Builder method = MethodsUtil.builder(field.name(), field.fieldClass(), false);
+            if (field.fieldClass().equals(ParameterizedTypeName.get(Set.class, String.class))) {
+                method.addStatement(GeneratorUtil.prepareSetRestoreString(field.value()), field.methodName(), field.key(),
+                        ParameterizedTypeName.get(HashSet.class, String.class), Arrays.class);
+            } else {
+                method.addStatement(GeneratorUtil.PREFS_RESTORE_VALUE, field.methodName(), field.key(), field.fieldClass(), field.value().toString());
+            }
+
+            builder.addMethod(method.build());
         }
 
         return FieldsUtils.field("restore", type, builder);

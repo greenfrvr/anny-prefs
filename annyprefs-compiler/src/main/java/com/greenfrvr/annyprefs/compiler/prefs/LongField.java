@@ -2,6 +2,8 @@ package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.greenfrvr.annyprefs.annotation.LongPref;
 import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
 
 import javax.lang.model.element.Element;
 
@@ -44,8 +46,8 @@ public class LongField implements PrefField<Long> {
     }
 
     @Override
-    public Class<Long> fieldClass() {
-        return Long.class;
+    public TypeName fieldClass() {
+        return ClassName.get(Long.class);
     }
 
     @Override
