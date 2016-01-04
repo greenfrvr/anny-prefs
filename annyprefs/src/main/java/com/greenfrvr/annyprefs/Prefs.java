@@ -56,5 +56,15 @@ abstract class Prefs<S extends Save, R extends Restore, D extends Remove> implem
         return editor;
     }
 
+    @Override
+    public void registerListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
+        shared().registerOnSharedPreferenceChangeListener(listener);
+    }
+
+    @Override
+    public void unregisterListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
+        shared().registerOnSharedPreferenceChangeListener(listener);
+    }
+
     protected abstract Context getContext();
 }

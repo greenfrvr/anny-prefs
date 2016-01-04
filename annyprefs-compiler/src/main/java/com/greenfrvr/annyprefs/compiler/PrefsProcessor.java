@@ -133,6 +133,7 @@ public class PrefsProcessor extends AbstractProcessor {
         }
     }
 
+    //TODO - remove, debug purposes only
     private void printAnnyPrefs() {
         for (Anny anny : map.values()) {
             for (PrefField pref : anny.getPrefs()) {
