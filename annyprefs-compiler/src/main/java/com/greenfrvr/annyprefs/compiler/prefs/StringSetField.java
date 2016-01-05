@@ -60,6 +60,11 @@ public class StringSetField implements PrefField<Set> {
     }
 
     @Override
+    public String putValueStatement() {
+        return GeneratorUtil.PREFS_PUT_VALUE;
+    }
+
+    @Override
     public String toString() {
         return "StringSetField{" +
                 "name=" + name() +

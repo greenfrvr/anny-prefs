@@ -56,6 +56,11 @@ public class IntField implements PrefField<Integer> {
     }
 
     @Override
+    public String putValueStatement() {
+        return GeneratorUtil.PREFS_PUT_VALUE;
+    }
+
+    @Override
     public String toString() {
         return "IntField{" +
                 "name=" + name() +

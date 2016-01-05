@@ -1,29 +1,32 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
-import com.greenfrvr.annyprefs.annotation.FloatPref;
+import com.greenfrvr.annyprefs.annotation.DatePref;
 import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
+
+import java.util.Date;
 
 import javax.lang.model.element.Element;
 
 /**
  * Created by greenfrvr
  */
-public class FloatField implements PrefField<Float> {
+public class DateField implements PrefField<Long> {
+
 
     private Element el;
 
-    public FloatField() {
+    public DateField() {
     }
 
-    public FloatField(Element el) {
+    public DateField(Element el) {
         this.el = el;
     }
 
     @Override
-    public void setSource(Element element) {
-        this.el = element;
+    public void setSource(Element el) {
+        this.el = el;
     }
 
     @Override
@@ -33,7 +36,7 @@ public class FloatField implements PrefField<Float> {
 
     @Override
     public String key() {
-        String key = el.getAnnotation(FloatPref.class).key();
+        String key = el.getAnnotation(DatePref.class).key();
         if (key.isEmpty()) {
             key = name();
         }
@@ -41,28 +44,28 @@ public class FloatField implements PrefField<Float> {
     }
 
     @Override
-    public Float value() {
-        return el.getAnnotation(FloatPref.class).value();
+    public Long value() {
+        return el.getAnnotation(DatePref.class).value();
     }
 
     @Override
     public TypeName fieldClass() {
-        return ClassName.get(Float.class);
+        return ClassName.get(Date.class);
     }
 
     @Override
     public String methodName() {
-        return GeneratorUtil.FLOAT;
+        return GeneratorUtil.LONG;
     }
 
     @Override
     public String putValueStatement() {
-        return GeneratorUtil.PREFS_PUT_VALUE;
+        return GeneratorUtil.PREFS_PUT_DATE_VALUE;
     }
 
     @Override
     public String toString() {
-        return "FloatField{" +
+        return "StringField{" +
                 "name=" + name() +
                 ", key=" + key() +
                 ", value=" + value() +

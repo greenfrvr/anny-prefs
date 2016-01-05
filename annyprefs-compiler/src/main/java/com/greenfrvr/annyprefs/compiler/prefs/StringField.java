@@ -56,6 +56,11 @@ public class StringField implements PrefField<String> {
     }
 
     @Override
+    public String putValueStatement() {
+        return GeneratorUtil.PREFS_PUT_VALUE;
+    }
+
+    @Override
     public String toString() {
         return "StringField{" +
                 "name=" + name() +

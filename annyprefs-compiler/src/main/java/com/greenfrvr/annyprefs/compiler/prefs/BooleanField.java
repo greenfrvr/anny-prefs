@@ -56,6 +56,11 @@ public class BooleanField implements PrefField<Boolean> {
     }
 
     @Override
+    public String putValueStatement() {
+        return GeneratorUtil.PREFS_PUT_VALUE;
+    }
+
+    @Override
     public String toString() {
         return "BooleanField{" +
                 "name=" + name() +

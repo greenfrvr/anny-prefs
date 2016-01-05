@@ -3,6 +3,7 @@ package com.greenfrvr.annyprefs.compiler;
 import com.google.auto.service.AutoService;
 import com.greenfrvr.annyprefs.annotation.AnnyPref;
 import com.greenfrvr.annyprefs.annotation.BoolPref;
+import com.greenfrvr.annyprefs.annotation.DatePref;
 import com.greenfrvr.annyprefs.annotation.FloatPref;
 import com.greenfrvr.annyprefs.annotation.IntPref;
 import com.greenfrvr.annyprefs.annotation.LongPref;
@@ -47,9 +48,8 @@ public class PrefsProcessor extends AbstractProcessor {
     private Adapter adapter;
 
     private static final List<Class<? extends Annotation>> CLASSES = Arrays.asList(
-            StringPref.class, IntPref.class,
-            LongPref.class, FloatPref.class,
-            BoolPref.class, StringSetPref.class
+            StringPref.class, IntPref.class, LongPref.class, FloatPref.class,
+            BoolPref.class, DatePref.class, StringSetPref.class
     );
 
     @Override
@@ -72,6 +72,7 @@ public class PrefsProcessor extends AbstractProcessor {
         annotations.add(LongPref.class.getCanonicalName());
         annotations.add(FloatPref.class.getCanonicalName());
         annotations.add(BoolPref.class.getCanonicalName());
+        annotations.add(DatePref.class.getCanonicalName());
         annotations.add(StringSetPref.class.getCanonicalName());
         return annotations;
     }

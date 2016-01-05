@@ -20,4 +20,7 @@ public interface PrefField<T> {
     TypeName fieldClass();
 
     String methodName();
+
+    String putValueStatement();
+
 }

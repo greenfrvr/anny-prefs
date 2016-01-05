@@ -1,6 +1,7 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.greenfrvr.annyprefs.annotation.BoolPref;
+import com.greenfrvr.annyprefs.annotation.DatePref;
 import com.greenfrvr.annyprefs.annotation.FloatPref;
 import com.greenfrvr.annyprefs.annotation.IntPref;
 import com.greenfrvr.annyprefs.annotation.LongPref;
@@ -8,6 +9,7 @@ import com.greenfrvr.annyprefs.annotation.StringPref;
 import com.greenfrvr.annyprefs.annotation.StringSetPref;
 
 import java.lang.annotation.Annotation;
+import java.util.Date;
 
 /**
  * Created by greenfrvr
@@ -38,6 +40,10 @@ public class PrefFieldFactory {
 
         if (cls.equals(StringSetPref.class)) {
             return new StringSetField();
+        }
+
+        if (cls.equals(DatePref.class)) {
+            return new DateField();
         }
 
         return null;

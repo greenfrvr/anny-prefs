@@ -1,6 +1,7 @@
 package com.greenfrvr.annyprefs.compiler;
 
 import com.greenfrvr.annyprefs.annotation.StringSetPref;
+import com.greenfrvr.annyprefs.compiler.prefs.DateField;
 import com.greenfrvr.annyprefs.compiler.prefs.PrefField;
 import com.greenfrvr.annyprefs.compiler.prefs.PrefFieldFactory;
 import com.greenfrvr.annyprefs.compiler.prefs.StringSetField;
@@ -140,7 +141,7 @@ public class Anny {
         for (PrefField field : prefs) {
             MethodSpec method = MethodsUtil.builder(field.name(), type, false)
                     .addParameter(field.fieldClass(), "value")
-                    .addStatement(GeneratorUtil.PREFS_PUT_VALUE, field.methodName(), field.key())
+                    .addStatement(field.putValueStatement(), field.methodName(), field.key())
                     .build();
             builder.addMethod(method);
         }
@@ -157,8 +158,10 @@ public class Anny {
             MethodSpec.Builder method = MethodsUtil.builder(field.name(), field.fieldClass(), false);
             if (field instanceof StringSetField) {
                 MethodsUtil.makeSetRestoreMethod(method, (StringSetField) field);
+            } else if (field instanceof DateField) {
+                method.addStatement(GeneratorUtil.PREFS_RESTORE_DATE_VALUE, field.fieldClass(), field.methodName(), field.key(), field.value());
             } else {
-                method.addStatement(GeneratorUtil.PREFS_RESTORE_VALUE, field.methodName(), field.key(), field.fieldClass(), field.value().toString());
+                method.addStatement(GeneratorUtil.PREFS_RESTORE_VALUE, field.methodName(), field.key(), field.fieldClass(), field.value());
             }
 
             builder.addMethod(method.build());

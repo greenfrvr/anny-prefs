@@ -56,6 +56,11 @@ public class LongField implements PrefField<Long> {
     }
 
     @Override
+    public String putValueStatement() {
+        return GeneratorUtil.PREFS_PUT_VALUE;
+    }
+
+    @Override
     public String toString() {
         return "LongField{" +
                 "name=" + name() +
