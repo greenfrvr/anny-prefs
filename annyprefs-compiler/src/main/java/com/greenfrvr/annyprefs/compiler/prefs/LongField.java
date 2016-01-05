@@ -3,6 +3,7 @@ package com.greenfrvr.annyprefs.compiler.prefs;
 import com.greenfrvr.annyprefs.annotation.LongPref;
 import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 
 import javax.lang.model.element.Element;
@@ -56,8 +57,13 @@ public class LongField implements PrefField<Long> {
     }
 
     @Override
-    public String putValueStatement() {
-        return GeneratorUtil.PREFS_PUT_VALUE;
+    public void putRestoreStatement(MethodSpec.Builder builder) {
+        builder.addStatement(GeneratorUtil.PREFS_RESTORE_LONG_VALUE, methodName(), key(), value());
+    }
+
+    @Override
+    public void putSaveStatement(MethodSpec.Builder builder) {
+        builder.addParameter(fieldClass(), "value").addStatement(GeneratorUtil.PREFS_PUT_VALUE, methodName(), key());
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.greenfrvr.annyprefs.compiler.prefs;
 import com.greenfrvr.annyprefs.annotation.DatePref;
 import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 
 import java.util.Date;
@@ -59,8 +60,13 @@ public class DateField implements PrefField<Long> {
     }
 
     @Override
-    public String putValueStatement() {
-        return GeneratorUtil.PREFS_PUT_DATE_VALUE;
+    public void putRestoreStatement(MethodSpec.Builder builder) {
+        builder.addStatement(GeneratorUtil.PREFS_RESTORE_DATE_VALUE, fieldClass(), methodName(), key(), value());
+    }
+
+    @Override
+    public void putSaveStatement(MethodSpec.Builder builder) {
+        builder.addParameter(fieldClass(), "value").addStatement(GeneratorUtil.PREFS_PUT_DATE_VALUE, methodName(), key());
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 
 import javax.lang.model.element.Element;
@@ -21,6 +22,8 @@ public interface PrefField<T> {
 
     String methodName();
 
-    String putValueStatement();
+    void putRestoreStatement(MethodSpec.Builder builder);
+
+    void putSaveStatement(MethodSpec.Builder builder);
 
 }

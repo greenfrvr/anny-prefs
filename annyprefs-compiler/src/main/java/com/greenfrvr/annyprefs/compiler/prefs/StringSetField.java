@@ -3,10 +3,13 @@ package com.greenfrvr.annyprefs.compiler.prefs;
 import com.google.common.collect.Sets;
 import com.greenfrvr.annyprefs.annotation.StringSetPref;
 import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.lang.model.element.Element;
@@ -60,8 +63,18 @@ public class StringSetField implements PrefField<Set> {
     }
 
     @Override
-    public String putValueStatement() {
-        return GeneratorUtil.PREFS_PUT_VALUE;
+    public void putRestoreStatement(MethodSpec.Builder builder) {
+        if (value().isEmpty()) {
+            builder.addStatement(GeneratorUtil.PREFS_RESTORE_SET_EMPTY_VALUE, methodName(), key(), null);
+        } else {
+            TypeName setType = ParameterizedTypeName.get(HashSet.class, String.class);
+            builder.addStatement(GeneratorUtil.restoreSetStatement(this), methodName(), key(), setType, Arrays.class);
+        }
+    }
+
+    @Override
+    public void putSaveStatement(MethodSpec.Builder builder) {
+        builder.addParameter(fieldClass(), "value").addStatement(GeneratorUtil.PREFS_PUT_VALUE, methodName(), key());
     }
 
     @Override

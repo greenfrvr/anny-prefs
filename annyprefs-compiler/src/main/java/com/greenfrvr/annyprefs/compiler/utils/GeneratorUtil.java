@@ -45,7 +45,10 @@ public class GeneratorUtil {
     public static final String PREFS_CONSTRUCTOR = "this.$N = $N.getApplicationContext()";
     public static final String PREFS_PUT_VALUE = "editor().put$N($S, value);\nreturn this";
     public static final String PREFS_PUT_DATE_VALUE = "editor().put$N($S, value.getTime());\nreturn this";
-    public static final String PREFS_RESTORE_VALUE = "return shared().get$N($S, $T.valueOf($S))";
+    public static final String PREFS_RESTORE_VALUE = "return shared().get$N($S, $L)";
+    public static final String PREFS_RESTORE_STRING_VALUE = "return shared().get$N($S, $S)";
+    public static final String PREFS_RESTORE_LONG_VALUE = "return shared().get$N($S, $LL)";
+    public static final String PREFS_RESTORE_FLOAT_VALUE = "return shared().get$N($S, $Lf)";
     public static final String PREFS_RESTORE_DATE_VALUE = "return new $T(shared().get$N($S, $LL))";
     public static final String PREFS_RESTORE_SET_VALUE = "return shared().get$N($S, new $T($T.asList(0)))";
     public static final String PREFS_RESTORE_SET_EMPTY_VALUE = "return shared().get$N($S, $L)";

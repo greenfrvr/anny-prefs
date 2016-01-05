@@ -1,10 +1,7 @@
 package com.greenfrvr.annyprefs.compiler;
 
-import com.greenfrvr.annyprefs.annotation.StringSetPref;
-import com.greenfrvr.annyprefs.compiler.prefs.DateField;
 import com.greenfrvr.annyprefs.compiler.prefs.PrefField;
 import com.greenfrvr.annyprefs.compiler.prefs.PrefFieldFactory;
-import com.greenfrvr.annyprefs.compiler.prefs.StringSetField;
 import com.greenfrvr.annyprefs.compiler.utils.FieldsUtils;
 import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
 import com.greenfrvr.annyprefs.compiler.utils.MethodsUtil;
@@ -19,10 +16,7 @@ import com.squareup.javapoet.TypeSpec;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Element;
@@ -73,9 +67,7 @@ public class Anny {
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(GeneratorUtil.SAVE_CLASS);
 
-        for (PrefField field : prefs) {
-            builder.addMethod(MethodsUtil.saveMethodInstance(name, field));
-        }
+        prefs.stream().forEach(field -> builder.addMethod(MethodsUtil.saveMethodInstance(name, field)));
 
         generate(filer, builder.build());
     }
@@ -85,9 +77,7 @@ public class Anny {
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(GeneratorUtil.RESTORE_CLASS);
 
-        for (PrefField field : prefs) {
-            builder.addMethod(MethodsUtil.restoreMethodInstance(field));
-        }
+        prefs.stream().forEach(field -> builder.addMethod(MethodsUtil.restoreMethodInstance(field)));
 
         generate(filer, builder.build());
     }
@@ -97,9 +87,7 @@ public class Anny {
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(GeneratorUtil.REMOVE_CLASS);
 
-        for (PrefField field : prefs) {
-            builder.addMethod(MethodsUtil.removeMethodInstance(name, field));
-        }
+        prefs.stream().forEach(field -> builder.addMethod(MethodsUtil.removeMethodInstance(name, field)));
 
         generate(filer, builder.build());
     }
@@ -138,13 +126,12 @@ public class Anny {
     private FieldSpec innerSaveInstance(TypeName type) {
         TypeSpec.Builder builder = TypeSpec.anonymousClassBuilder("").addSuperinterface(type);
 
-        for (PrefField field : prefs) {
-            MethodSpec method = MethodsUtil.builder(field.name(), type, false)
-                    .addParameter(field.fieldClass(), "value")
-                    .addStatement(field.putValueStatement(), field.methodName(), field.key())
-                    .build();
-            builder.addMethod(method);
-        }
+        prefs.stream()
+                .forEach(field -> {
+                    MethodSpec.Builder method = MethodsUtil.builder(field.name(), type, false);
+                    field.putSaveStatement(method);
+                    builder.addMethod(method.build());
+                });
 
         addTransactionMethods(builder);
 
@@ -154,18 +141,12 @@ public class Anny {
     private FieldSpec innerRestoreInstance(TypeName type) {
         TypeSpec.Builder builder = TypeSpec.anonymousClassBuilder("").addSuperinterface(type);
 
-        for (PrefField field : prefs) {
-            MethodSpec.Builder method = MethodsUtil.builder(field.name(), field.fieldClass(), false);
-            if (field instanceof StringSetField) {
-                MethodsUtil.makeSetRestoreMethod(method, (StringSetField) field);
-            } else if (field instanceof DateField) {
-                method.addStatement(GeneratorUtil.PREFS_RESTORE_DATE_VALUE, field.fieldClass(), field.methodName(), field.key(), field.value());
-            } else {
-                method.addStatement(GeneratorUtil.PREFS_RESTORE_VALUE, field.methodName(), field.key(), field.fieldClass(), field.value());
-            }
-
-            builder.addMethod(method.build());
-        }
+        prefs.stream()
+                .forEach(field -> {
+                    MethodSpec.Builder method = MethodsUtil.builder(field.name(), field.fieldClass(), false);
+                    field.putRestoreStatement(method);
+                    builder.addMethod(method.build());
+                });
 
         return FieldsUtils.field("restore", type, builder);
     }
@@ -173,12 +154,12 @@ public class Anny {
     private FieldSpec innerRemoveInstance(TypeName type) {
         TypeSpec.Builder builder = TypeSpec.anonymousClassBuilder("").addSuperinterface(type);
 
-        for (PrefField field : prefs) {
-            MethodSpec method = MethodsUtil.builder(field.name(), type, false)
-                    .addStatement(GeneratorUtil.PREFS_REMOVE_VALUE, field.key())
-                    .build();
-            builder.addMethod(method);
-        }
+        prefs.stream()
+                .forEach(field -> {
+                    MethodSpec.Builder method = MethodsUtil.builder(field.name(), type, false)
+                            .addStatement(GeneratorUtil.PREFS_REMOVE_VALUE, field.key());
+                    builder.addMethod(method.build());
+                });
 
         addTransactionMethods(builder);
 
