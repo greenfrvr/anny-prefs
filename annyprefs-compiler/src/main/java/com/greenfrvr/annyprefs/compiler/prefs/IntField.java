@@ -1,7 +1,7 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.greenfrvr.annyprefs.annotation.IntPref;
-import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
+import com.greenfrvr.annyprefs.compiler.utils.Utils;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
@@ -16,10 +16,6 @@ public class IntField implements PrefField<Integer> {
     private Element el;
 
     public IntField() {
-    }
-
-    public IntField(Element el) {
-        this.el = el;
     }
 
     @Override
@@ -53,17 +49,17 @@ public class IntField implements PrefField<Integer> {
 
     @Override
     public String methodName() {
-        return GeneratorUtil.INT;
+        return Utils.INT;
     }
 
     @Override
     public void putRestoreStatement(MethodSpec.Builder builder) {
-        builder.addStatement(GeneratorUtil.PREFS_RESTORE_VALUE, methodName(), key(), value());
+        builder.addStatement(Utils.PREFS_RESTORE_VALUE, methodName(), key(), value());
     }
 
     @Override
     public void putSaveStatement(MethodSpec.Builder builder) {
-        builder.addParameter(fieldClass(), "value").addStatement(GeneratorUtil.PREFS_PUT_VALUE, methodName(), key());
+        builder.addParameter(fieldClass(), "value").addStatement(Utils.PREFS_PUT_VALUE, methodName(), key());
     }
 
     @Override

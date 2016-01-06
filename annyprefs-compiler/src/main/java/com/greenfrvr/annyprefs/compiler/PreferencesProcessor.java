@@ -1,6 +1,8 @@
 package com.greenfrvr.annyprefs.compiler;
 
 import com.google.auto.service.AutoService;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.greenfrvr.annyprefs.annotation.AnnyPref;
 import com.greenfrvr.annyprefs.annotation.BoolPref;
 import com.greenfrvr.annyprefs.annotation.DatePref;
@@ -9,13 +11,12 @@ import com.greenfrvr.annyprefs.annotation.IntPref;
 import com.greenfrvr.annyprefs.annotation.LongPref;
 import com.greenfrvr.annyprefs.annotation.StringPref;
 import com.greenfrvr.annyprefs.annotation.StringSetPref;
-import com.greenfrvr.annyprefs.compiler.prefs.PrefField;
+import com.greenfrvr.annyprefs.compiler.components.AdapterGenerator;
+import com.greenfrvr.annyprefs.compiler.utils.Utils;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,15 +39,16 @@ import javax.tools.Diagnostic;
  * Created by greenfrvr
  */
 @AutoService(Processor.class)
-public class PrefsProcessor extends AbstractProcessor {
+public class PreferencesProcessor extends AbstractProcessor {
 
     private Types typeUtils;
     private Elements elementUtils;
     private Filer filer;
     private Messager messager;
     private Map<String, Anny> map;
-    private Adapter adapter;
+    private AdapterGenerator adapter;
 
+    private static final Class<? extends AnnyPref> ANNY = AnnyPref.class;
     private static final List<Class<? extends Annotation>> CLASSES = Arrays.asList(
             StringPref.class, IntPref.class, LongPref.class, FloatPref.class,
             BoolPref.class, DatePref.class, StringSetPref.class
@@ -59,21 +61,16 @@ public class PrefsProcessor extends AbstractProcessor {
         elementUtils = processingEnv.getElementUtils();
         filer = processingEnv.getFiler();
         messager = processingEnv.getMessager();
-        map = new LinkedHashMap<>();
-        adapter = new Adapter();
+
+        map = Maps.newHashMap();
+        adapter = AdapterGenerator.init();
     }
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        Set<String> annotations = new LinkedHashSet<>();
-        annotations.add(AnnyPref.class.getCanonicalName());
-        annotations.add(StringPref.class.getCanonicalName());
-        annotations.add(IntPref.class.getCanonicalName());
-        annotations.add(LongPref.class.getCanonicalName());
-        annotations.add(FloatPref.class.getCanonicalName());
-        annotations.add(BoolPref.class.getCanonicalName());
-        annotations.add(DatePref.class.getCanonicalName());
-        annotations.add(StringSetPref.class.getCanonicalName());
+        Set<String> annotations = Sets.newHashSet(ANNY.getCanonicalName());
+        CLASSES.stream().forEach(aClass -> annotations.add(aClass.getCanonicalName()));
+
         return annotations;
     }
 
@@ -84,62 +81,56 @@ public class PrefsProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        for (Element element : roundEnv.getElementsAnnotatedWith(AnnyPref.class)) {
+        for (Element element : roundEnv.getElementsAnnotatedWith(ANNY)) {
 
             if (element.getKind() != ElementKind.INTERFACE) {
-                error(element, "Only classes can be annotated with @%s", AnnyPref.class.getSimpleName());
+                error(element, "Only classes can be annotated with @%s", ANNY.getSimpleName());
                 return true;
             }
 
             String className = element.getSimpleName().toString();
             String packageName = elementUtils.getPackageOf(element).toString();
             System.out.println("Got AnnyPref annotation for [" + elementUtils.getPackageOf(element).getQualifiedName() + "." + className + "] class!" + packageName);
-            Anny anny = new Anny(className, element.getAnnotation(AnnyPref.class).name(), packageName);
-            map.put(className, anny);
-            adapter.add(className, anny.getPrefClassName());
+
+            map.put(className, new Anny(className, element.getAnnotation(ANNY).name(), packageName));
+            adapter.add(className, className.concat(Utils.PREFS));
         }
 
-        searchAnnotations(roundEnv);
+        CLASSES.stream().forEach(aClass -> searchAnnotationClass(roundEnv, aClass));
         printAnnyPrefs();
 
-        generate();
+        generatePreferences();
+        generateAdapter();
 
         return true;
     }
 
-    private void generate() {
-        try {
-            for (Anny anny : map.values()) {
-                anny.generateCode(filer);
-            }
-            adapter.generateCode(filer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void searchAnnotations(RoundEnvironment roundEnv) {
-        for (Class<? extends Annotation> cls : CLASSES) {
-            searchAnnotationClass(roundEnv, cls);
-        }
-    }
-
     private void searchAnnotationClass(RoundEnvironment roundEnv, Class<? extends Annotation> cls) {
         System.out.println(String.format("Scanning for %s annotation", cls.getSimpleName()));
-        for (Element el : roundEnv.getElementsAnnotatedWith(cls)) {
-            String key = el.getEnclosingElement().getSimpleName().toString();
-            if (map.get(key) != null) {
-                map.get(key).addElement(el, cls);
-            }
-        }
+        roundEnv.getElementsAnnotatedWith(cls).stream()
+                .filter(el -> map.get(key(el)) != null)
+                .forEach(el -> map.get(key(el)).addElement(el, cls));
     }
 
-    //TODO - remove, debug purposes only
-    private void printAnnyPrefs() {
-        for (Anny anny : map.values()) {
-            for (PrefField pref : anny.getPrefs()) {
-                System.out.println(pref.toString());
+    private String key(Element element) {
+        return element.getEnclosingElement().getSimpleName().toString();
+    }
+
+    private void generatePreferences() {
+        map.values().stream().forEach(anny -> {
+            try {
+                anny.construct().generate(filer);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+        });
+    }
+
+    private void generateAdapter() {
+        try {
+            adapter.construct().generate(filer);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -147,4 +138,8 @@ public class PrefsProcessor extends AbstractProcessor {
         messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
     }
 
+    //TODO - remove, debug purposes only
+    private void printAnnyPrefs() {
+        map.values().forEach(anny -> anny.getPrefs().forEach(pref -> System.out.println(pref.toString())));
+    }
 }

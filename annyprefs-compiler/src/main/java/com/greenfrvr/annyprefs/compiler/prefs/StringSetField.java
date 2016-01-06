@@ -2,12 +2,11 @@ package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.google.common.collect.Sets;
 import com.greenfrvr.annyprefs.annotation.StringSetPref;
-import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
+import com.greenfrvr.annyprefs.compiler.utils.Utils;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,10 +21,6 @@ public class StringSetField implements PrefField<Set> {
     private Element el;
 
     public StringSetField() {
-    }
-
-    public StringSetField(Element el) {
-        this.el = el;
     }
 
     @Override
@@ -59,22 +54,22 @@ public class StringSetField implements PrefField<Set> {
 
     @Override
     public String methodName() {
-        return GeneratorUtil.STRING_SET;
+        return Utils.STRING_SET;
     }
 
     @Override
     public void putRestoreStatement(MethodSpec.Builder builder) {
         if (value().isEmpty()) {
-            builder.addStatement(GeneratorUtil.PREFS_RESTORE_SET_EMPTY_VALUE, methodName(), key(), null);
+            builder.addStatement(Utils.PREFS_RESTORE_SET_EMPTY_VALUE, methodName(), key(), null);
         } else {
             TypeName setType = ParameterizedTypeName.get(HashSet.class, String.class);
-            builder.addStatement(GeneratorUtil.restoreSetStatement(this), methodName(), key(), setType, Arrays.class);
+            builder.addStatement(Utils.restoreSetStatement(this), methodName(), key(), setType, Arrays.class);
         }
     }
 
     @Override
     public void putSaveStatement(MethodSpec.Builder builder) {
-        builder.addParameter(fieldClass(), "value").addStatement(GeneratorUtil.PREFS_PUT_VALUE, methodName(), key());
+        builder.addParameter(fieldClass(), "value").addStatement(Utils.PREFS_PUT_VALUE, methodName(), key());
     }
 
     @Override

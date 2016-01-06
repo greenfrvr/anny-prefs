@@ -1,31 +1,26 @@
 package com.greenfrvr.annyprefs.compiler;
 
+import com.google.common.collect.Lists;
+import com.greenfrvr.annyprefs.compiler.components.util.Constructor;
+import com.greenfrvr.annyprefs.compiler.components.util.Generator;
+import com.greenfrvr.annyprefs.compiler.components.PrefInstanceGenerator;
+import com.greenfrvr.annyprefs.compiler.components.interfaces.RemoveInterfaceGenerator;
+import com.greenfrvr.annyprefs.compiler.components.interfaces.RestoreInterfaceGenerator;
 import com.greenfrvr.annyprefs.compiler.prefs.PrefField;
 import com.greenfrvr.annyprefs.compiler.prefs.PrefFieldFactory;
-import com.greenfrvr.annyprefs.compiler.utils.FieldsUtils;
-import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
-import com.greenfrvr.annyprefs.compiler.utils.MethodsUtil;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.greenfrvr.annyprefs.compiler.components.interfaces.SaveInterfaceGenerator;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.Modifier;
 
 /**
  * Created by greenfrvr
  */
-public class Anny {
+public class Anny implements DataSource, Constructor, Generator {
 
     private String name;
     private String prefsName;
@@ -36,7 +31,7 @@ public class Anny {
         this.name = name;
         this.prefsName = prefsName;
         this.packageName = packageName;
-        this.prefs = new ArrayList<>();
+        this.prefs = Lists.newArrayList();
     }
 
     public void addElement(Element el, Class<? extends Annotation> cls) {
@@ -51,139 +46,38 @@ public class Anny {
         return prefs;
     }
 
-    public void generateCode(Filer filer) throws IOException {
-        generateSaveInterface(filer);
-        generateRestoreInterface(filer);
-        generateRemoveInterface(filer);
-        generatePrefsInstance(filer);
+    @Override
+    public Generator construct() {
+
+        return this;
     }
 
-    public String getPrefClassName() {
-        return GeneratorUtil.prefsInstanceName(name);
+    @Override
+    public void generate(Filer filer) throws IOException {
+        SaveInterfaceGenerator.init(this).construct().generate(filer);
+        RestoreInterfaceGenerator.init(this).construct().generate(filer);
+        RemoveInterfaceGenerator.init(this).construct().generate(filer);
+
+        PrefInstanceGenerator.init(this).construct().generate(filer);
     }
 
-    private void generateSaveInterface(Filer filer) throws IOException {
-        TypeSpec.Builder builder = TypeSpec.interfaceBuilder(GeneratorUtil.saveInterfaceName(name))
-                .addModifiers(Modifier.PUBLIC)
-                .addSuperinterface(GeneratorUtil.SAVE_CLASS);
-
-        prefs.stream().forEach(field -> builder.addMethod(MethodsUtil.saveMethodInstance(name, field)));
-
-        generate(filer, builder.build());
+    @Override
+    public String name() {
+        return name;
     }
 
-    private void generateRestoreInterface(Filer filer) throws IOException {
-        TypeSpec.Builder builder = TypeSpec.interfaceBuilder(GeneratorUtil.restoreInterfaceName(name))
-                .addModifiers(Modifier.PUBLIC)
-                .addSuperinterface(GeneratorUtil.RESTORE_CLASS);
-
-        prefs.stream().forEach(field -> builder.addMethod(MethodsUtil.restoreMethodInstance(field)));
-
-        generate(filer, builder.build());
+    @Override
+    public String prefsName() {
+        return prefsName;
     }
 
-    private void generateRemoveInterface(Filer filer) throws IOException {
-        TypeSpec.Builder builder = TypeSpec.interfaceBuilder(GeneratorUtil.removeInterfaceName(name))
-                .addModifiers(Modifier.PUBLIC)
-                .addSuperinterface(GeneratorUtil.REMOVE_CLASS);
-
-        prefs.stream().forEach(field -> builder.addMethod(MethodsUtil.removeMethodInstance(name, field)));
-
-        generate(filer, builder.build());
+    @Override
+    public String packageName() {
+        return packageName;
     }
 
-    private void generatePrefsInstance(Filer filer) throws IOException {
-        TypeName saveClassName = ClassName.get(GeneratorUtil.GENERATED_PACKAGE, GeneratorUtil.saveInterfaceName(name));
-        TypeName restoreClassName = ClassName.get(GeneratorUtil.GENERATED_PACKAGE, GeneratorUtil.restoreInterfaceName(name));
-        TypeName removeClassName = ClassName.get(GeneratorUtil.GENERATED_PACKAGE, GeneratorUtil.removeInterfaceName(name));
-
-        TypeSpec.Builder builder = TypeSpec.classBuilder(GeneratorUtil.prefsInstanceName(name))
-                .addModifiers(Modifier.PUBLIC)
-                .superclass(ParameterizedTypeName.get(GeneratorUtil.PREFS_CLASS, saveClassName, restoreClassName, removeClassName))
-                .addField(FieldsUtils.field("KEY", TypeName.get(String.class), GeneratorUtil.prefsKey(packageName, name)))
-                .addField(GeneratorUtil.CONTEXT_CLASS, "context", Modifier.PRIVATE);
-
-        MethodSpec constructor = MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PROTECTED)
-                .addParameter(GeneratorUtil.CONTEXT_CLASS, "context")
-                .addStatement(GeneratorUtil.PREFS_CONSTRUCTOR, "context", "context")
-                .build();
-
-        builder.addMethod(constructor)
-                .addMethod(instantiateMethod("save", saveClassName, "return save"))
-                .addMethod(instantiateMethod("restore", restoreClassName, "return restore"))
-                .addMethod(instantiateMethod("remove", removeClassName, "return remove"))
-                .addMethod(instantiateMethod("getContext", GeneratorUtil.CONTEXT_CLASS, "return context"))
-                .addMethod(instantiateMethod("name", ClassName.get(String.class), "return \"" + prefsName + "\""));
-
-        builder.addField(innerSaveInstance(saveClassName))
-                .addField(innerRestoreInstance(restoreClassName))
-                .addField(innerRemoveInstance(removeClassName));
-
-        generate(filer, builder.build());
-    }
-
-    private FieldSpec innerSaveInstance(TypeName type) {
-        TypeSpec.Builder builder = TypeSpec.anonymousClassBuilder("").addSuperinterface(type);
-
-        prefs.stream()
-                .forEach(field -> {
-                    MethodSpec.Builder method = MethodsUtil.builder(field.name(), type, false);
-                    field.putSaveStatement(method);
-                    builder.addMethod(method.build());
-                });
-
-        addTransactionMethods(builder);
-
-        return FieldsUtils.field("save", type, builder);
-    }
-
-    private FieldSpec innerRestoreInstance(TypeName type) {
-        TypeSpec.Builder builder = TypeSpec.anonymousClassBuilder("").addSuperinterface(type);
-
-        prefs.stream()
-                .forEach(field -> {
-                    MethodSpec.Builder method = MethodsUtil.builder(field.name(), field.fieldClass(), false);
-                    field.putRestoreStatement(method);
-                    builder.addMethod(method.build());
-                });
-
-        return FieldsUtils.field("restore", type, builder);
-    }
-
-    private FieldSpec innerRemoveInstance(TypeName type) {
-        TypeSpec.Builder builder = TypeSpec.anonymousClassBuilder("").addSuperinterface(type);
-
-        prefs.stream()
-                .forEach(field -> {
-                    MethodSpec.Builder method = MethodsUtil.builder(field.name(), type, false)
-                            .addStatement(GeneratorUtil.PREFS_REMOVE_VALUE, field.key());
-                    builder.addMethod(method.build());
-                });
-
-        addTransactionMethods(builder);
-
-        return FieldsUtils.field("remove", type, builder);
-    }
-
-    private void addTransactionMethods(TypeSpec.Builder builder) {
-        builder.addMethod(MethodsUtil.syncMethod(name));
-        builder.addMethod(MethodsUtil.asyncMethod(name));
-    }
-
-    private MethodSpec instantiateMethod(String name, TypeName returnType, String... statements) {
-        MethodSpec.Builder builder = MethodsUtil.builder(name, returnType, false);
-
-        if (statements != null) {
-            for (String statement : statements) {
-                builder.addStatement(statement);
-            }
-        }
-        return builder.build();
-    }
-
-    private void generate(Filer filer, TypeSpec typeSpec) throws IOException {
-        JavaFile javaFile = JavaFile.builder(GeneratorUtil.GENERATED_PACKAGE, typeSpec).build();
-        javaFile.writeTo(filer);
+    @Override
+    public List<PrefField> prefs() {
+        return prefs;
     }
 }

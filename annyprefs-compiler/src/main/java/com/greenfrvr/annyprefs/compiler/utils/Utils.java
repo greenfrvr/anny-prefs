@@ -1,20 +1,14 @@
 package com.greenfrvr.annyprefs.compiler.utils;
 
-import com.greenfrvr.annyprefs.compiler.prefs.PrefField;
 import com.greenfrvr.annyprefs.compiler.prefs.StringSetField;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Created by greenfrvr
  */
-public class GeneratorUtil {
+public class Utils {
 
     public static final String PACKAGE = "com.greenfrvr.annyprefs";
     public static final String GENERATED_PACKAGE = PACKAGE;
@@ -54,36 +48,20 @@ public class GeneratorUtil {
     public static final String PREFS_RESTORE_SET_EMPTY_VALUE = "return shared().get$N($S, $L)";
     public static final String PREFS_REMOVE_VALUE = "editor().remove($S);\nreturn this";
 
-    public static String prefsInstanceName(String name) {
-        return name + PREFS;
+    public static ClassName saveClassName(String name) {
+        return className(SAVE.concat(name));
     }
 
-    public static String saveInterfaceName(String name) {
-        return SAVE + name;
-    }
-
-    public static String restoreInterfaceName(String name) {
-        return RESTORE + name;
-    }
-
-    public static String removeInterfaceName(String name) {
-        return REMOVE + name;
-    }
-
-    public static ClassName saveInterfaceClassName(String name) {
-        return className(saveInterfaceName(name));
-    }
-
-    public static ClassName removeInterfaceClassName(String name) {
-        return className(removeInterfaceName(name));
+    public static ClassName removeClassName(String name) {
+        return className(REMOVE.concat(name));
     }
 
     public static String prefsKey(String packageName, String name) {
-        return packageName + "." + name.toLowerCase() + "_" + PREFS.toLowerCase();
+        return (packageName + '.' + name + '_' + PREFS).toLowerCase();
     }
 
     public static ClassName className(String name) {
-        return ClassName.get(GeneratorUtil.GENERATED_PACKAGE, name);
+        return ClassName.get(Utils.GENERATED_PACKAGE, name);
     }
 
     public static String restoreSetStatement(StringSetField field) {

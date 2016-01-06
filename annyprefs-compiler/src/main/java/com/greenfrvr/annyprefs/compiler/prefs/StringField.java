@@ -1,7 +1,7 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.greenfrvr.annyprefs.annotation.StringPref;
-import com.greenfrvr.annyprefs.compiler.utils.GeneratorUtil;
+import com.greenfrvr.annyprefs.compiler.utils.Utils;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
@@ -16,10 +16,6 @@ public class StringField implements PrefField<String> {
     private Element el;
 
     public StringField() {
-    }
-
-    public StringField(Element el) {
-        this.el = el;
     }
 
     @Override
@@ -53,17 +49,17 @@ public class StringField implements PrefField<String> {
 
     @Override
     public String methodName() {
-        return GeneratorUtil.STRING;
+        return Utils.STRING;
     }
 
     @Override
     public void putRestoreStatement(MethodSpec.Builder builder) {
-        builder.addStatement(GeneratorUtil.PREFS_RESTORE_STRING_VALUE, methodName(), key(), value());
+        builder.addStatement(Utils.PREFS_RESTORE_STRING_VALUE, methodName(), key(), value());
     }
 
     @Override
     public void putSaveStatement(MethodSpec.Builder builder) {
-        builder.addParameter(fieldClass(), "value").addStatement(GeneratorUtil.PREFS_PUT_VALUE, methodName(), key());
+        builder.addParameter(fieldClass(), "value").addStatement(Utils.PREFS_PUT_VALUE, methodName(), key());
     }
 
     @Override
