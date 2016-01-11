@@ -5,6 +5,7 @@ import com.greenfrvr.annyprefs.annotation.DatePref;
 import com.greenfrvr.annyprefs.annotation.FloatPref;
 import com.greenfrvr.annyprefs.annotation.IntPref;
 import com.greenfrvr.annyprefs.annotation.LongPref;
+import com.greenfrvr.annyprefs.annotation.ObjectPref;
 import com.greenfrvr.annyprefs.annotation.StringPref;
 import com.greenfrvr.annyprefs.annotation.StringSetPref;
 
@@ -44,6 +45,10 @@ public class PrefFieldFactory {
 
         if (cls.equals(DatePref.class)) {
             return new DateField();
+        }
+
+        if (cls.equals(ObjectPref.class)) {
+            return new ObjectField();
         }
 
         return null;

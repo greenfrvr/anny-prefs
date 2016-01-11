@@ -9,6 +9,7 @@ import com.greenfrvr.annyprefs.annotation.DatePref;
 import com.greenfrvr.annyprefs.annotation.FloatPref;
 import com.greenfrvr.annyprefs.annotation.IntPref;
 import com.greenfrvr.annyprefs.annotation.LongPref;
+import com.greenfrvr.annyprefs.annotation.ObjectPref;
 import com.greenfrvr.annyprefs.annotation.StringPref;
 import com.greenfrvr.annyprefs.annotation.StringSetPref;
 import com.greenfrvr.annyprefs.compiler.components.AdapterGenerator;
@@ -30,6 +31,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -51,7 +53,7 @@ public class PreferencesProcessor extends AbstractProcessor {
     private static final Class<? extends AnnyPref> ANNY = AnnyPref.class;
     private static final List<Class<? extends Annotation>> CLASSES = Arrays.asList(
             StringPref.class, IntPref.class, LongPref.class, FloatPref.class,
-            BoolPref.class, DatePref.class, StringSetPref.class
+            BoolPref.class, DatePref.class, ObjectPref.class, StringSetPref.class
     );
 
     @Override
@@ -81,6 +83,8 @@ public class PreferencesProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        roundEnv.getRootElements().stream().filter(element1 -> element1 instanceof PackageElement)
+                .forEach(pack -> System.out.println(pack.toString()));
         for (Element element : roundEnv.getElementsAnnotatedWith(ANNY)) {
 
             if (element.getKind() != ElementKind.INTERFACE) {

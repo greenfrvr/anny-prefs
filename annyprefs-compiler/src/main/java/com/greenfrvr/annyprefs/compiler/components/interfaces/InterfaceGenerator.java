@@ -5,6 +5,7 @@ import com.greenfrvr.annyprefs.compiler.components.util.Constructor;
 import com.greenfrvr.annyprefs.compiler.components.util.Generator;
 import com.greenfrvr.annyprefs.compiler.prefs.PrefField;
 import com.greenfrvr.annyprefs.compiler.utils.Utils;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
@@ -33,7 +34,8 @@ public abstract class InterfaceGenerator implements Constructor, Generator {
     public InterfaceGenerator construct() {
         TypeSpec.Builder builder = TypeSpec.interfaceBuilder(className())
                 .addModifiers(Modifier.PUBLIC)
-                .addSuperinterface(superInterface());
+                .addSuperinterface(superInterface())
+                .addAnnotation(AnnotationSpec.builder(SuppressWarnings.class).addMember("value", "\"UnusedDeclaration\"").build());
 
         data.prefs().stream().forEach(constructMethod(builder));
 
