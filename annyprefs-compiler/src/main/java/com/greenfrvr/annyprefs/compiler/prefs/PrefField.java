@@ -14,6 +14,8 @@ public interface PrefField<T> {
 
     String name();
 
+    boolean hasResKey();
+
     String key();
 
     T value();

@@ -1,6 +1,8 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.google.common.collect.Sets;
+import com.greenfrvr.annyprefs.annotation.BoolPref;
+import com.greenfrvr.annyprefs.annotation.StringPref;
 import com.greenfrvr.annyprefs.annotation.StringSetPref;
 import com.greenfrvr.annyprefs.compiler.utils.Utils;
 import com.squareup.javapoet.MethodSpec;
@@ -34,7 +36,17 @@ public class StringSetField implements PrefField<Set> {
     }
 
     @Override
+    public boolean hasResKey() {
+        return el.getAnnotation(StringSetPref.class).keyRes() > 0;
+    }
+
+    @Override
     public String key() {
+        int res = el.getAnnotation(StringSetPref.class).keyRes();
+        if (res > 0) {
+            return String.valueOf(res);
+        }
+
         String key = el.getAnnotation(StringSetPref.class).key();
         if (key.isEmpty()) {
             key = name();
@@ -60,16 +72,18 @@ public class StringSetField implements PrefField<Set> {
     @Override
     public void putRestoreStatement(MethodSpec.Builder builder) {
         if (value().isEmpty()) {
-            builder.addStatement(Utils.PREFS_RESTORE_SET_EMPTY_VALUE, methodName(), key(), null);
+            String statement = hasResKey() ? Utils.PREFS_RESTORE_SET_EMPTY_VALUE_RES : Utils.PREFS_RESTORE_SET_EMPTY_VALUE;
+            builder.addStatement(statement, methodName(), key(), null);
         } else {
             TypeName setType = ParameterizedTypeName.get(HashSet.class, String.class);
-            builder.addStatement(Utils.restoreSetStatement(this), methodName(), key(), setType, Arrays.class);
+            builder.addStatement(Utils.restoreSetStatement(this, hasResKey()), methodName(), key(), setType, Arrays.class);
         }
     }
 
     @Override
     public void putSaveStatement(MethodSpec.Builder builder) {
-        builder.addParameter(fieldClass(), "value").addStatement(Utils.PREFS_PUT_VALUE, methodName(), key());
+        String statement = hasResKey() ? Utils.PREFS_PUT_VALUE_RES : Utils.PREFS_PUT_VALUE;
+        builder.addParameter(fieldClass(), "value").addStatement(statement, methodName(), key());
     }
 
     @Override

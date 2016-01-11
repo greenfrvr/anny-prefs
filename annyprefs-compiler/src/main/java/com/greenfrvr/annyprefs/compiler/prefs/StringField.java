@@ -1,5 +1,6 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
+import com.greenfrvr.annyprefs.annotation.BoolPref;
 import com.greenfrvr.annyprefs.annotation.StringPref;
 import com.greenfrvr.annyprefs.compiler.utils.Utils;
 import com.squareup.javapoet.ClassName;
@@ -29,7 +30,17 @@ public class StringField implements PrefField<String> {
     }
 
     @Override
+    public boolean hasResKey() {
+        return el.getAnnotation(StringPref.class).keyRes() > 0;
+    }
+
+    @Override
     public String key() {
+        int res = el.getAnnotation(StringPref.class).keyRes();
+        if (res > 0) {
+            return String.valueOf(res);
+        }
+
         String key = el.getAnnotation(StringPref.class).key();
         if (key.isEmpty()) {
             key = name();
@@ -54,12 +65,14 @@ public class StringField implements PrefField<String> {
 
     @Override
     public void putRestoreStatement(MethodSpec.Builder builder) {
-        builder.addStatement(Utils.PREFS_RESTORE_STRING_VALUE, methodName(), key(), value());
+        String statement = hasResKey() ? Utils.PREFS_RESTORE_STRING_VALUE_RES : Utils.PREFS_RESTORE_STRING_VALUE;
+        builder.addStatement(statement, methodName(), key(), value());
     }
 
     @Override
     public void putSaveStatement(MethodSpec.Builder builder) {
-        builder.addParameter(fieldClass(), "value").addStatement(Utils.PREFS_PUT_VALUE, methodName(), key());
+        String statement = hasResKey() ? Utils.PREFS_PUT_VALUE_RES : Utils.PREFS_PUT_VALUE;
+        builder.addParameter(fieldClass(), "value").addStatement(statement, methodName(), key());
     }
 
     @Override

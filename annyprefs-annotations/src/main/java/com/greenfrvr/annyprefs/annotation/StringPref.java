@@ -13,6 +13,8 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 @Retention(CLASS)
 public @interface StringPref {
 
+    int keyRes() default -1;
+
     String key() default "";
 
     String value() default "";

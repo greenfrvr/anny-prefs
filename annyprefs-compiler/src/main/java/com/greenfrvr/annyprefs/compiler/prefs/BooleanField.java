@@ -29,7 +29,17 @@ public class BooleanField implements PrefField<Boolean> {
     }
 
     @Override
+    public boolean hasResKey() {
+        return el.getAnnotation(BoolPref.class).keyRes() > 0;
+    }
+
+    @Override
     public String key() {
+        int res = el.getAnnotation(BoolPref.class).keyRes();
+        if (res > 0) {
+            return String.valueOf(res);
+        }
+
         String key = el.getAnnotation(BoolPref.class).key();
         if (key.isEmpty()) {
             key = name();
@@ -54,12 +64,14 @@ public class BooleanField implements PrefField<Boolean> {
 
     @Override
     public void putRestoreStatement(MethodSpec.Builder builder) {
-        builder.addStatement(Utils.PREFS_RESTORE_VALUE, methodName(), key(), value());
+        String statement = hasResKey() ? Utils.PREFS_RESTORE_VALUE_RES : Utils.PREFS_RESTORE_VALUE;
+        builder.addStatement(statement, methodName(), key(), value());
     }
 
     @Override
     public void putSaveStatement(MethodSpec.Builder builder) {
-        builder.addParameter(fieldClass(), "value").addStatement(Utils.PREFS_PUT_VALUE, methodName(), key());
+        String statement = hasResKey() ? Utils.PREFS_PUT_VALUE_RES : Utils.PREFS_PUT_VALUE;
+        builder.addParameter(fieldClass(), "value").addStatement(statement, methodName(), key());
     }
 
     @Override

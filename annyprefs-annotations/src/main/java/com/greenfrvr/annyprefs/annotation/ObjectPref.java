@@ -5,6 +5,8 @@ package com.greenfrvr.annyprefs.annotation;
  */
 public @interface ObjectPref {
 
+    int keyRes() default -1;
+
     String key() default "";
 
     Class<?> type();

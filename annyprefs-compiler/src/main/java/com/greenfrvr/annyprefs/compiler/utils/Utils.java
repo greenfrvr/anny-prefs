@@ -40,9 +40,13 @@ public class Utils {
     public static final String PREFS_CONSTRUCTOR = "this.$N = $N.getApplicationContext()";
 
     public static final String PREFS_PUT_VALUE = "editor().put$N($S, value);\nreturn this";
+    public static final String PREFS_PUT_VALUE_RES = "editor().put$N(getContext().getString($L), value);\nreturn this";
     public static final String PREFS_PUT_DATE_VALUE = "editor().put$N($S, value.getTime());\nreturn this";
+    public static final String PREFS_PUT_DATE_VALUE_RES = "editor().put$N(getContext().getString($L), value.getTime());\nreturn this";
     public static final String PREFS_PUT_OBJECT_VALUE = "String json = new $T().toJson(value, $T.class);\n" +
             "editor().putString($S, json);\nreturn this";
+    public static final String PREFS_PUT_OBJECT_VALUE_RES = "String json = new $T().toJson(value, $T.class);\n" +
+            "editor().putString(getContext().getString($L), json);\nreturn this";
 
     public static final String PREFS_RESTORE_VALUE = "return shared().get$N($S, $L)";
     public static final String PREFS_RESTORE_STRING_VALUE = "return shared().get$N($S, $S)";
@@ -53,7 +57,17 @@ public class Utils {
     public static final String PREFS_RESTORE_SET_VALUE = "return shared().get$N($S, new $T($T.asList(0)))";
     public static final String PREFS_RESTORE_SET_EMPTY_VALUE = "return shared().get$N($S, $L)";
 
+    public static final String PREFS_RESTORE_VALUE_RES = "return shared().get$N(getContext().getString($L), $L)";
+    public static final String PREFS_RESTORE_STRING_VALUE_RES = "return shared().get$N(getContext().getString($L), $S)";
+    public static final String PREFS_RESTORE_JSON_STRING_VALUE_RES = "return new $T().fromJson(shared().get$N(getContext().getString($L), $S), $T.class)";
+    public static final String PREFS_RESTORE_LONG_VALUE_RES = "return shared().get$N(getContext().getString($L), $LL)";
+    public static final String PREFS_RESTORE_FLOAT_VALUE_RES = "return shared().get$N(getContext().getString($L), $Lf)";
+    public static final String PREFS_RESTORE_DATE_VALUE_RES = "return new $T(shared().get$N(getContext().getString($L), $LL))";
+    public static final String PREFS_RESTORE_SET_VALUE_RES = "return shared().get$N(getContext().getString($L), new $T($T.asList(0)))";
+    public static final String PREFS_RESTORE_SET_EMPTY_VALUE_RES = "return shared().get$N(getContext().getString($L), $L)";
+
     public static final String PREFS_REMOVE_VALUE = "editor().remove($S);\nreturn this";
+    public static final String PREFS_REMOVE_VALUE_RES = "editor().remove(getContext().getString($L));\nreturn this";
 
     public static ClassName saveClassName(String name) {
         return className(SAVE.concat(name));
@@ -71,7 +85,7 @@ public class Utils {
         return ClassName.get(Utils.GENERATED_PACKAGE, name);
     }
 
-    public static String restoreSetStatement(StringSetField field) {
+    public static String restoreSetStatement(StringSetField field, boolean hasResKey) {
         Iterator<String> it = field.value().iterator();
         StringBuilder builder = new StringBuilder();
 
@@ -80,6 +94,6 @@ public class Utils {
             if (it.hasNext()) builder.append(", ");
         }
 
-        return PREFS_RESTORE_SET_VALUE.replaceAll("0", builder.toString());
+        return (hasResKey ? PREFS_RESTORE_SET_VALUE_RES : PREFS_RESTORE_SET_VALUE).replaceAll("0", builder.toString());
     }
 }

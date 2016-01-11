@@ -1,5 +1,6 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
+import com.greenfrvr.annyprefs.annotation.BoolPref;
 import com.greenfrvr.annyprefs.annotation.DatePref;
 import com.greenfrvr.annyprefs.compiler.utils.Utils;
 import com.squareup.javapoet.ClassName;
@@ -32,7 +33,18 @@ public class DateField implements PrefField<Long> {
     }
 
     @Override
+    public boolean hasResKey() {
+        return el.getAnnotation(DatePref.class).keyRes() > 0;
+    }
+
+
+    @Override
     public String key() {
+        int res = el.getAnnotation(DatePref.class).keyRes();
+        if (res > 0) {
+            return String.valueOf(res);
+        }
+
         String key = el.getAnnotation(DatePref.class).key();
         if (key.isEmpty()) {
             key = name();
@@ -57,12 +69,14 @@ public class DateField implements PrefField<Long> {
 
     @Override
     public void putRestoreStatement(MethodSpec.Builder builder) {
-        builder.addStatement(Utils.PREFS_RESTORE_DATE_VALUE, fieldClass(), methodName(), key(), value());
+        String statement = hasResKey() ? Utils.PREFS_RESTORE_DATE_VALUE_RES : Utils.PREFS_RESTORE_DATE_VALUE;
+        builder.addStatement(statement, fieldClass(), methodName(), key(), value());
     }
 
     @Override
     public void putSaveStatement(MethodSpec.Builder builder) {
-        builder.addParameter(fieldClass(), "value").addStatement(Utils.PREFS_PUT_DATE_VALUE, methodName(), key());
+        String statement = hasResKey() ? Utils.PREFS_PUT_DATE_VALUE_RES : Utils.PREFS_PUT_DATE_VALUE;
+        builder.addParameter(fieldClass(), "value").addStatement(statement, methodName(), key());
     }
 
     @Override
