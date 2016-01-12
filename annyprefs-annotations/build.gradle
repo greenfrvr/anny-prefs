@@ -3,7 +3,20 @@ apply plugin: 'java'
 targetCompatibility = JavaVersion.VERSION_1_7
 sourceCompatibility = JavaVersion.VERSION_1_7
 
+def logger = new com.android.build.gradle.internal.LoggerWrapper(project.logger)
+def sdkHandler = new com.android.build.gradle.internal.SdkHandler(project, logger)
+for (File file : sdkHandler.sdkLoader.repositories) {
+    repositories.maven {
+        url = file.toURI()
+    }
+}
+
 configurations {
     provided
     compile.extendsFrom provided
+}
+
+dependencies {
+    provided 'com.google.android:android:2.1.2'
+    compile 'com.android.support:support-annotations:23.1.0'
 }

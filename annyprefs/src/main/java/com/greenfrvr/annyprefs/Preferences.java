@@ -7,8 +7,6 @@ import android.content.SharedPreferences;
  */
 public interface Preferences<S extends Save, R extends Restore, D extends Remove> {
 
-    String name();
-
     S save();
 
     R restore();

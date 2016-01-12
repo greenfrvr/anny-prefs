@@ -16,8 +16,7 @@ abstract class Prefs<S extends Save, R extends Restore, D extends Remove> implem
         this.context = context;
     }
 
-    @Override
-    public String name() {
+    protected String name() {
         return "";
     }
 

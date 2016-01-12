@@ -1,11 +1,13 @@
 package com.greenfrvr.annyprefs.annotation;
 
+import android.support.annotation.StringRes;
+
 /**
  * Created by greenfrvr
  */
 public @interface ObjectPref {
 
-    int keyRes() default -1;
+    @StringRes int keyRes() default -1;
 
     String key() default "";
 
