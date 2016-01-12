@@ -1,6 +1,5 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
-import com.greenfrvr.annyprefs.annotation.BoolPref;
 import com.greenfrvr.annyprefs.annotation.ObjectPref;
 import com.greenfrvr.annyprefs.compiler.utils.Utils;
 import com.squareup.javapoet.ClassName;
@@ -78,14 +77,13 @@ public class ObjectField implements PrefField<String> {
     @Override
     public void putRestoreStatement(MethodSpec.Builder builder) {
         String statement = hasResKey() ? Utils.PREFS_RESTORE_JSON_STRING_VALUE_RES : Utils.PREFS_RESTORE_JSON_STRING_VALUE;
-        builder.addStatement(statement, Utils.GSON_CLASS, methodName(), key(), "", fieldClass());
+        builder.addCode(statement, Utils.GSON_CLASS, methodName(), key(), "", fieldClass());
     }
 
     @Override
     public void putSaveStatement(MethodSpec.Builder builder) {
         String statement = hasResKey() ? Utils.PREFS_PUT_OBJECT_VALUE_RES : Utils.PREFS_PUT_OBJECT_VALUE;
-        builder.addParameter(fieldClass(), "value")
-                .addStatement(statement, Utils.GSON_CLASS, fieldClass(), key());
+        builder.addParameter(fieldClass(), "value").addCode(statement, Utils.GSON_CLASS, fieldClass(), key());
     }
 
     @Override

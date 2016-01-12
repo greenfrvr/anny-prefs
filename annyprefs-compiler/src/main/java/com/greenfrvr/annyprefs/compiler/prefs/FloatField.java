@@ -1,6 +1,5 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
-import com.greenfrvr.annyprefs.annotation.BoolPref;
 import com.greenfrvr.annyprefs.annotation.FloatPref;
 import com.greenfrvr.annyprefs.compiler.utils.Utils;
 import com.squareup.javapoet.ClassName;
@@ -66,13 +65,13 @@ public class FloatField implements PrefField<Float> {
     @Override
     public void putRestoreStatement(MethodSpec.Builder builder) {
         String statement = hasResKey() ? Utils.PREFS_RESTORE_FLOAT_VALUE_RES : Utils.PREFS_RESTORE_FLOAT_VALUE;
-        builder.addStatement(statement, methodName(), key(), value());
+        builder.addCode(statement, methodName(), key(), value());
     }
 
     @Override
     public void putSaveStatement(MethodSpec.Builder builder) {
         String statement = hasResKey() ? Utils.PREFS_PUT_VALUE_RES : Utils.PREFS_PUT_VALUE;
-        builder.addParameter(fieldClass(), "value").addStatement(statement, methodName(), key());
+        builder.addParameter(fieldClass(), "value").addCode(statement, methodName(), key());
     }
 
 

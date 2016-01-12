@@ -10,6 +10,7 @@ import java.util.Iterator;
  */
 public class Utils {
 
+    public static final String INDENT = "    ";
     public static final String PACKAGE = "com.greenfrvr.annyprefs";
     public static final String GENERATED_PACKAGE = PACKAGE;
 
@@ -33,41 +34,44 @@ public class Utils {
     public static final String STRING_SET = "StringSet";
 
     public static final String ADAPTER_PREFS_INSTANCE =
-            "if (!PREFS.containsKey($L.KEY)) " +
-                    "{\n\tPREFS.put($L.KEY, new $T(context)); \n}" +
-                    "\nreturn ($T) PREFS.get($L.KEY);\n";
+            "$T prefs = ($T) PREFS.get($L.KEY);\n" +
+                    "if (prefs == null) {\n" +
+                    "\tprefs = new $T(context);\n" +
+                    "\tPREFS.put($L.KEY, prefs);\n" +
+                    "}\n" +
+                    "return prefs;\n";
 
     public static final String PREFS_CONSTRUCTOR = "this.$N = $N.getApplicationContext()";
 
-    public static final String PREFS_PUT_VALUE = "editor().put$N($S, value);\nreturn this";
-    public static final String PREFS_PUT_VALUE_RES = "editor().put$N(getContext().getString($L), value);\nreturn this";
-    public static final String PREFS_PUT_DATE_VALUE = "editor().put$N($S, value.getTime());\nreturn this";
-    public static final String PREFS_PUT_DATE_VALUE_RES = "editor().put$N(getContext().getString($L), value.getTime());\nreturn this";
+    public static final String PREFS_PUT_VALUE = "editor().put$N($S, value);\nreturn this;\n";
+    public static final String PREFS_PUT_VALUE_RES = "editor().put$N(getContext().getString($L), value);\nreturn this;\n";
+    public static final String PREFS_PUT_DATE_VALUE = "editor().put$N($S, value.getTime());\nreturn this;\n";
+    public static final String PREFS_PUT_DATE_VALUE_RES = "editor().put$N(getContext().getString($L), value.getTime());\nreturn this;\n";
     public static final String PREFS_PUT_OBJECT_VALUE = "String json = new $T().toJson(value, $T.class);\n" +
-            "editor().putString($S, json);\nreturn this";
+            "editor().putString($S, json);\nreturn this;\n";
     public static final String PREFS_PUT_OBJECT_VALUE_RES = "String json = new $T().toJson(value, $T.class);\n" +
-            "editor().putString(getContext().getString($L), json);\nreturn this";
+            "editor().putString(getContext().getString($L), json);\nreturn this;\n";
 
-    public static final String PREFS_RESTORE_VALUE = "return shared().get$N($S, $L)";
-    public static final String PREFS_RESTORE_STRING_VALUE = "return shared().get$N($S, $S)";
-    public static final String PREFS_RESTORE_JSON_STRING_VALUE = "return new $T().fromJson(shared().get$N($S, $S), $T.class)";
-    public static final String PREFS_RESTORE_LONG_VALUE = "return shared().get$N($S, $LL)";
-    public static final String PREFS_RESTORE_FLOAT_VALUE = "return shared().get$N($S, $Lf)";
-    public static final String PREFS_RESTORE_DATE_VALUE = "return new $T(shared().get$N($S, $LL))";
-    public static final String PREFS_RESTORE_SET_VALUE = "return shared().get$N($S, new $T($T.asList(0)))";
-    public static final String PREFS_RESTORE_SET_EMPTY_VALUE = "return shared().get$N($S, $L)";
+    public static final String PREFS_RESTORE_VALUE = "return shared().get$N($S, $L);\n";
+    public static final String PREFS_RESTORE_STRING_VALUE = "return shared().get$N($S, $S);\n";
+    public static final String PREFS_RESTORE_JSON_STRING_VALUE = "return new $T().fromJson(shared().get$N($S, $S), $T.class);\n";
+    public static final String PREFS_RESTORE_LONG_VALUE = "return shared().get$N($S, $LL);\n";
+    public static final String PREFS_RESTORE_FLOAT_VALUE = "return shared().get$N($S, $Lf);\n";
+    public static final String PREFS_RESTORE_DATE_VALUE = "return new $T(shared().get$N($S, $LL));\n";
+    public static final String PREFS_RESTORE_SET_VALUE = "return shared().get$N($S, new $T($T.asList(0)));\n";
+    public static final String PREFS_RESTORE_SET_EMPTY_VALUE = "return shared().get$N($S, $L);\n";
 
-    public static final String PREFS_RESTORE_VALUE_RES = "return shared().get$N(getContext().getString($L), $L)";
-    public static final String PREFS_RESTORE_STRING_VALUE_RES = "return shared().get$N(getContext().getString($L), $S)";
-    public static final String PREFS_RESTORE_JSON_STRING_VALUE_RES = "return new $T().fromJson(shared().get$N(getContext().getString($L), $S), $T.class)";
-    public static final String PREFS_RESTORE_LONG_VALUE_RES = "return shared().get$N(getContext().getString($L), $LL)";
-    public static final String PREFS_RESTORE_FLOAT_VALUE_RES = "return shared().get$N(getContext().getString($L), $Lf)";
-    public static final String PREFS_RESTORE_DATE_VALUE_RES = "return new $T(shared().get$N(getContext().getString($L), $LL))";
-    public static final String PREFS_RESTORE_SET_VALUE_RES = "return shared().get$N(getContext().getString($L), new $T($T.asList(0)))";
-    public static final String PREFS_RESTORE_SET_EMPTY_VALUE_RES = "return shared().get$N(getContext().getString($L), $L)";
+    public static final String PREFS_RESTORE_VALUE_RES = "return shared().get$N(getContext().getString($L), $L);\n";
+    public static final String PREFS_RESTORE_STRING_VALUE_RES = "return shared().get$N(getContext().getString($L), $S);\n";
+    public static final String PREFS_RESTORE_JSON_STRING_VALUE_RES = "return new $T().fromJson(shared().get$N(getContext().getString($L), $S), $T.class);\n";
+    public static final String PREFS_RESTORE_LONG_VALUE_RES = "return shared().get$N(getContext().getString($L), $LL);\n";
+    public static final String PREFS_RESTORE_FLOAT_VALUE_RES = "return shared().get$N(getContext().getString($L), $Lf);\n";
+    public static final String PREFS_RESTORE_DATE_VALUE_RES = "return new $T(shared().get$N(getContext().getString($L), $LL));\n";
+    public static final String PREFS_RESTORE_SET_VALUE_RES = "return shared().get$N(getContext().getString($L), new $T($T.asList(0)));\n";
+    public static final String PREFS_RESTORE_SET_EMPTY_VALUE_RES = "return shared().get$N(getContext().getString($L), $L);\n";
 
-    public static final String PREFS_REMOVE_VALUE = "editor().remove($S);\nreturn this";
-    public static final String PREFS_REMOVE_VALUE_RES = "editor().remove(getContext().getString($L));\nreturn this";
+    public static final String PREFS_REMOVE_VALUE = "editor().remove($S);\nreturn this;\n";
+    public static final String PREFS_REMOVE_VALUE_RES = "editor().remove(getContext().getString($L));\nreturn this;\n";
 
     public static ClassName saveClassName(String name) {
         return className(SAVE.concat(name));

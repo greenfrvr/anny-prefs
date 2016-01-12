@@ -45,7 +45,7 @@ public abstract class InterfaceGenerator implements Constructor, Generator {
 
     @Override
     public void generate(Filer filer) throws IOException {
-        JavaFile javaFile = JavaFile.builder(Utils.GENERATED_PACKAGE, typeSpec).build();
+        JavaFile javaFile = JavaFile.builder(Utils.GENERATED_PACKAGE, typeSpec).indent(Utils.INDENT).build();
         javaFile.writeTo(filer);
     }
 

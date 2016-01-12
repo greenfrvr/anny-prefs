@@ -23,7 +23,7 @@ public class RemoveInnerInstance extends InnerInstanceGenerator {
 
     @Override
     void constructMethod(PrefField field, MethodSpec.Builder method) {
-        method.addStatement(field.hasResKey() ? Utils.PREFS_REMOVE_VALUE_RES : Utils.PREFS_REMOVE_VALUE, field.key());
+        method.addCode(field.hasResKey() ? Utils.PREFS_REMOVE_VALUE_RES : Utils.PREFS_REMOVE_VALUE, field.key());
     }
 
     @Override

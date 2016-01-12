@@ -1,6 +1,5 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
-import com.greenfrvr.annyprefs.annotation.BoolPref;
 import com.greenfrvr.annyprefs.annotation.DatePref;
 import com.greenfrvr.annyprefs.compiler.utils.Utils;
 import com.squareup.javapoet.ClassName;
@@ -15,7 +14,6 @@ import javax.lang.model.element.Element;
  * Created by greenfrvr
  */
 public class DateField implements PrefField<Long> {
-
 
     private Element el;
 
@@ -70,13 +68,13 @@ public class DateField implements PrefField<Long> {
     @Override
     public void putRestoreStatement(MethodSpec.Builder builder) {
         String statement = hasResKey() ? Utils.PREFS_RESTORE_DATE_VALUE_RES : Utils.PREFS_RESTORE_DATE_VALUE;
-        builder.addStatement(statement, fieldClass(), methodName(), key(), value());
+        builder.addCode(statement, fieldClass(), methodName(), key(), value());
     }
 
     @Override
     public void putSaveStatement(MethodSpec.Builder builder) {
         String statement = hasResKey() ? Utils.PREFS_PUT_DATE_VALUE_RES : Utils.PREFS_PUT_DATE_VALUE;
-        builder.addParameter(fieldClass(), "value").addStatement(statement, methodName(), key());
+        builder.addParameter(fieldClass(), "value").addCode(statement, methodName(), key());
     }
 
     @Override

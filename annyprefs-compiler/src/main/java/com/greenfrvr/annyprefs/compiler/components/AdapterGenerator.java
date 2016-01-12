@@ -17,6 +17,7 @@ import java.util.Map;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Modifier;
+import javax.rmi.CORBA.Util;
 
 /**
  * Created by greenfrvr
@@ -59,7 +60,7 @@ public class AdapterGenerator implements com.greenfrvr.annyprefs.compiler.compon
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                     .returns(className)
                     .addParameter(Utils.CONTEXT_CLASS, "context")
-                    .addCode(Utils.ADAPTER_PREFS_INSTANCE, prefsMap.get(key), prefsMap.get(key), className, className, prefsMap.get(key))
+                    .addCode(Utils.ADAPTER_PREFS_INSTANCE, className, className, prefsMap.get(key), className, prefsMap.get(key))
                     .build();
             typeBuilder.addMethod(method);
         });
@@ -71,7 +72,7 @@ public class AdapterGenerator implements com.greenfrvr.annyprefs.compiler.compon
 
     @Override
     public void generate(Filer filer) throws IOException {
-        JavaFile javaFile = JavaFile.builder(Utils.GENERATED_PACKAGE, typeSpec).build();
+        JavaFile javaFile = JavaFile.builder(Utils.GENERATED_PACKAGE, typeSpec).indent(Utils.INDENT).build();
         javaFile.writeTo(filer);
     }
 }

@@ -73,17 +73,17 @@ public class StringSetField implements PrefField<Set> {
     public void putRestoreStatement(MethodSpec.Builder builder) {
         if (value().isEmpty()) {
             String statement = hasResKey() ? Utils.PREFS_RESTORE_SET_EMPTY_VALUE_RES : Utils.PREFS_RESTORE_SET_EMPTY_VALUE;
-            builder.addStatement(statement, methodName(), key(), null);
+            builder.addCode(statement, methodName(), key(), null);
         } else {
             TypeName setType = ParameterizedTypeName.get(HashSet.class, String.class);
-            builder.addStatement(Utils.restoreSetStatement(this, hasResKey()), methodName(), key(), setType, Arrays.class);
+            builder.addCode(Utils.restoreSetStatement(this, hasResKey()), methodName(), key(), setType, Arrays.class);
         }
     }
 
     @Override
     public void putSaveStatement(MethodSpec.Builder builder) {
         String statement = hasResKey() ? Utils.PREFS_PUT_VALUE_RES : Utils.PREFS_PUT_VALUE;
-        builder.addParameter(fieldClass(), "value").addStatement(statement, methodName(), key());
+        builder.addParameter(fieldClass(), "value").addCode(statement, methodName(), key());
     }
 
     @Override
