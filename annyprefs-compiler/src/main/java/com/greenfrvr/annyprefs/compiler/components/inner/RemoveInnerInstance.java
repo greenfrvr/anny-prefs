@@ -12,18 +12,17 @@ import com.squareup.javapoet.TypeName;
  */
 public class RemoveInnerInstance extends InnerInstanceGenerator {
 
-    private RemoveInnerInstance(){
+    RemoveInnerInstance(DataSource dataSource){
+        super(dataSource);
     }
 
     public static RemoveInnerInstance init(DataSource data) {
-        RemoveInnerInstance instance = new RemoveInnerInstance();
-        instance.data = data;
-        return instance;
+        return new RemoveInnerInstance(data);
     }
 
     @Override
     void constructMethod(PrefField field, MethodSpec.Builder method) {
-        method.addCode(field.hasResKey() ? Utils.PREFS_REMOVE_VALUE_RES : Utils.PREFS_REMOVE_VALUE, field.key());
+        method.addCode(field.hasResKey() ? Utils.REMOVE_VALUE_RES : Utils.REMOVE_VALUE, field.key());
     }
 
     @Override

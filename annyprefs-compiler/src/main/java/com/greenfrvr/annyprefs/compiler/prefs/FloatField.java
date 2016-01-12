@@ -64,13 +64,13 @@ public class FloatField implements PrefField<Float> {
 
     @Override
     public void putRestoreStatement(MethodSpec.Builder builder) {
-        String statement = hasResKey() ? Utils.PREFS_RESTORE_FLOAT_VALUE_RES : Utils.PREFS_RESTORE_FLOAT_VALUE;
+        String statement = hasResKey() ? Utils.GET_FLOAT_VALUE_RES : Utils.GET_FLOAT_VALUE;
         builder.addCode(statement, methodName(), key(), value());
     }
 
     @Override
     public void putSaveStatement(MethodSpec.Builder builder) {
-        String statement = hasResKey() ? Utils.PREFS_PUT_VALUE_RES : Utils.PREFS_PUT_VALUE;
+        String statement = hasResKey() ? Utils.PUT_VALUE_RES : Utils.PUT_VALUE;
         builder.addParameter(fieldClass(), "value").addCode(statement, methodName(), key());
     }
 

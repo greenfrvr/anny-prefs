@@ -9,10 +9,17 @@ import android.preference.PreferenceManager;
  */
 abstract class Prefs<S extends Save, R extends Restore, D extends Remove> implements Preferences<S, R, D>, TransactionMethod {
 
+    private Context context;
     private SharedPreferences.Editor editor;
 
+    public Prefs(Context context) {
+        this.context = context;
+    }
+
     @Override
-    public abstract String name();
+    public String name() {
+        return "";
+    }
 
     @Override
     public abstract S save();
@@ -42,6 +49,10 @@ abstract class Prefs<S extends Save, R extends Restore, D extends Remove> implem
         editor = null;
     }
 
+    protected Context getContext() {
+        return context;
+    }
+
     protected SharedPreferences shared() {
         if (name().isEmpty()) {
             return PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -66,5 +77,5 @@ abstract class Prefs<S extends Save, R extends Restore, D extends Remove> implem
         shared().registerOnSharedPreferenceChangeListener(listener);
     }
 
-    protected abstract Context getContext();
+
 }

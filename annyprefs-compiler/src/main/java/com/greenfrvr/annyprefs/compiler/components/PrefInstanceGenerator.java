@@ -25,12 +25,12 @@ import javax.lang.model.element.Modifier;
  */
 public class PrefInstanceGenerator implements com.greenfrvr.annyprefs.compiler.components.util.Constructor, com.greenfrvr.annyprefs.compiler.components.util.Generator {
 
-    TypeSpec typeSpec;
-    DataSource data;
+    private TypeSpec typeSpec;
+    private DataSource data;
 
-    TypeName saveClassName;
-    TypeName restoreClassName;
-    TypeName removeClassName;
+    private TypeName saveClassName;
+    private TypeName restoreClassName;
+    private TypeName removeClassName;
 
     private PrefInstanceGenerator(DataSource data) {
         this.data = data;
@@ -48,21 +48,22 @@ public class PrefInstanceGenerator implements com.greenfrvr.annyprefs.compiler.c
         TypeSpec.Builder builder = TypeSpec.classBuilder(data.name().concat(Utils.PREFS))
                 .addModifiers(Modifier.PUBLIC)
                 .superclass(ParameterizedTypeName.get(Utils.PREFS_CLASS, saveClassName, restoreClassName, removeClassName))
-                .addField(Utils.CONTEXT_CLASS, "context", Modifier.PRIVATE)
                 .addField(staticKeyField());
 
         MethodSpec constructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PROTECTED)
                 .addParameter(Utils.CONTEXT_CLASS, "context")
-                .addStatement(Utils.PREFS_CONSTRUCTOR, "context", "context")
+                .addStatement(Utils.PREFS_CONSTRUCTOR, "context")
                 .build();
 
-        builder.addMethod(constructor)
-                .addMethod(instantiateMethod("save", saveClassName, "return save"))
+        builder.addMethod(constructor);
+        builder.addMethod(instantiateMethod("save", saveClassName, "return save"))
                 .addMethod(instantiateMethod("restore", restoreClassName, "return restore"))
-                .addMethod(instantiateMethod("remove", removeClassName, "return remove"))
-                .addMethod(instantiateMethod("getContext", Utils.CONTEXT_CLASS, "return context"))
-                .addMethod(instantiateMethod("name", ClassName.get(String.class), String.format("return \"%s\"", data.prefsName())));
+                .addMethod(instantiateMethod("remove", removeClassName, "return remove"));
+
+        if (!data.prefsName().isEmpty()) {
+            builder.addMethod(instantiateMethod("name", ClassName.get(String.class), String.format("return \"%s\"", data.prefsName())));
+        }
 
         builder.addField(SaveInnerInstance.init(data).construct())
                 .addField(RestoreInnerInstance.init(data).construct())

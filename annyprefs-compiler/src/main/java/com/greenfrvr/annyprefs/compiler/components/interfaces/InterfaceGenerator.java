@@ -24,6 +24,10 @@ public abstract class InterfaceGenerator implements Constructor, Generator {
     DataSource data;
     TypeSpec typeSpec;
 
+    InterfaceGenerator(DataSource dataSource) {
+        this.data = dataSource;
+    }
+
     abstract String className();
 
     abstract TypeName superInterface();

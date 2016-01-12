@@ -17,6 +17,10 @@ public abstract class InnerInstanceGenerator {
 
     DataSource data;
 
+    InnerInstanceGenerator(DataSource dataSource) {
+        this.data = dataSource;
+    }
+
     abstract void constructMethod(PrefField field,  MethodSpec.Builder method);
 
     abstract String instanceName();

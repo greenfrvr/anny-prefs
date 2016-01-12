@@ -14,13 +14,12 @@ import java.util.function.Consumer;
  */
 public class RemoveInterfaceGenerator extends InterfaceGenerator {
 
-    private RemoveInterfaceGenerator() {
+    RemoveInterfaceGenerator(DataSource dataSource) {
+        super(dataSource);
     }
 
     public static RemoveInterfaceGenerator init(DataSource data) {
-        RemoveInterfaceGenerator generator = new RemoveInterfaceGenerator();
-        generator.data = data;
-        return generator;
+        return new RemoveInterfaceGenerator(data);
     }
 
     @Override

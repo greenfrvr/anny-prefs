@@ -12,13 +12,12 @@ import com.squareup.javapoet.TypeName;
  */
 public class SaveInnerInstance extends InnerInstanceGenerator {
 
-    private SaveInnerInstance(){
+    SaveInnerInstance(DataSource dataSource){
+        super(dataSource);
     }
 
     public static SaveInnerInstance init(DataSource data) {
-        SaveInnerInstance instance = new SaveInnerInstance();
-        instance.data = data;
-        return instance;
+        return new SaveInnerInstance(data);
     }
 
     @Override

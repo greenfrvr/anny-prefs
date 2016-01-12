@@ -49,7 +49,7 @@ public class AdapterGenerator implements com.greenfrvr.annyprefs.compiler.compon
 
     @Override
     public Generator construct() {
-        TypeSpec.Builder typeBuilder = TypeSpec.classBuilder("PrefsAdapter")
+        TypeSpec.Builder typeBuilder = TypeSpec.classBuilder("AnnyPrefs")
                 .addModifiers(Modifier.PUBLIC)
                 .addField(getClassesField());
 

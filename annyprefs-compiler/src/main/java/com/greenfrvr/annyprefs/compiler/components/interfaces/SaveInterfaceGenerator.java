@@ -14,13 +14,12 @@ import java.util.function.Consumer;
  */
 public class SaveInterfaceGenerator extends InterfaceGenerator {
 
-    private SaveInterfaceGenerator() {
+    SaveInterfaceGenerator(DataSource dataSource) {
+        super(dataSource);
     }
 
     public static SaveInterfaceGenerator init(DataSource data) {
-        SaveInterfaceGenerator generator = new SaveInterfaceGenerator();
-        generator.data = data;
-        return generator;
+        return new SaveInterfaceGenerator(data);
     }
 
     @Override

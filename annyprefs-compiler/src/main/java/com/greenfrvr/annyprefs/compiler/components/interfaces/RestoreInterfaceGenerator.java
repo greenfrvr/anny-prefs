@@ -14,13 +14,12 @@ import java.util.function.Consumer;
  */
 public class RestoreInterfaceGenerator extends InterfaceGenerator {
 
-    private RestoreInterfaceGenerator() {
+    RestoreInterfaceGenerator(DataSource dataSource) {
+        super(dataSource);
     }
 
     public static RestoreInterfaceGenerator init(DataSource data) {
-        RestoreInterfaceGenerator generator = new RestoreInterfaceGenerator();
-        generator.data = data;
-        return generator;
+        return new RestoreInterfaceGenerator(data);
     }
 
     @Override

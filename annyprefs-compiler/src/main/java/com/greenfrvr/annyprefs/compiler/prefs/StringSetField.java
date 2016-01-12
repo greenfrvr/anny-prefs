@@ -1,8 +1,6 @@
 package com.greenfrvr.annyprefs.compiler.prefs;
 
 import com.google.common.collect.Sets;
-import com.greenfrvr.annyprefs.annotation.BoolPref;
-import com.greenfrvr.annyprefs.annotation.StringPref;
 import com.greenfrvr.annyprefs.annotation.StringSetPref;
 import com.greenfrvr.annyprefs.compiler.utils.Utils;
 import com.squareup.javapoet.MethodSpec;
@@ -72,7 +70,7 @@ public class StringSetField implements PrefField<Set> {
     @Override
     public void putRestoreStatement(MethodSpec.Builder builder) {
         if (value().isEmpty()) {
-            String statement = hasResKey() ? Utils.PREFS_RESTORE_SET_EMPTY_VALUE_RES : Utils.PREFS_RESTORE_SET_EMPTY_VALUE;
+            String statement = hasResKey() ? Utils.GET_EMPTY_VALUE_RES : Utils.GET_EMPTY_VALUE;
             builder.addCode(statement, methodName(), key(), null);
         } else {
             TypeName setType = ParameterizedTypeName.get(HashSet.class, String.class);
@@ -82,7 +80,7 @@ public class StringSetField implements PrefField<Set> {
 
     @Override
     public void putSaveStatement(MethodSpec.Builder builder) {
-        String statement = hasResKey() ? Utils.PREFS_PUT_VALUE_RES : Utils.PREFS_PUT_VALUE;
+        String statement = hasResKey() ? Utils.PUT_VALUE_RES : Utils.PUT_VALUE;
         builder.addParameter(fieldClass(), "value").addCode(statement, methodName(), key());
     }
 

@@ -67,13 +67,13 @@ public class DateField implements PrefField<Long> {
 
     @Override
     public void putRestoreStatement(MethodSpec.Builder builder) {
-        String statement = hasResKey() ? Utils.PREFS_RESTORE_DATE_VALUE_RES : Utils.PREFS_RESTORE_DATE_VALUE;
+        String statement = hasResKey() ? Utils.GET_DATE_VALUE_RES : Utils.GET_DATE_VALUE;
         builder.addCode(statement, fieldClass(), methodName(), key(), value());
     }
 
     @Override
     public void putSaveStatement(MethodSpec.Builder builder) {
-        String statement = hasResKey() ? Utils.PREFS_PUT_DATE_VALUE_RES : Utils.PREFS_PUT_DATE_VALUE;
+        String statement = hasResKey() ? Utils.PUT_DATE_VALUE_RES : Utils.PUT_DATE_VALUE;
         builder.addParameter(fieldClass(), "value").addCode(statement, methodName(), key());
     }
 
