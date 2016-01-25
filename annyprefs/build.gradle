@@ -19,9 +19,33 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':annyprefs-annotations')
-    compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.google.code.gson:gson:2.5'
-    testCompile 'junit:junit:4.12'
 }
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'anny-prefs'
+
+    publishedGroupId = 'com.github.greenfrvr'
+    libraryName = 'AnnyPrefs'
+    artifact = 'annyprefs'
+
+    libraryDescription = 'Android annotation based SharedPreferences wrapper with fluent interface.'
+
+    siteUrl = 'https://bintray.com/greenfrvr/maven/anny-prefs'
+    gitUrl = 'https://github.com/greenfrvr/anny-prefs.git'
+
+    libraryVersion = '1.0.0'
+
+    developerId = 'greenfrvr'
+    developerName = 'Artsiom Grintsevich'
+    developerEmail = 'greenfrvr.dev@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+apply from: "install.gradle"
+apply from: "bintray.gradle"

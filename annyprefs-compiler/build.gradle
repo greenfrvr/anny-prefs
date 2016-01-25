@@ -1,7 +1,45 @@
+import com.android.build.gradle.internal.LoggerWrapper
+import com.android.build.gradle.internal.SdkHandler
+
 apply plugin: 'java'
+
+def logger = new LoggerWrapper(project.logger)
+def sdkHandler = new SdkHandler(project, logger)
+for (File file : sdkHandler.sdkLoader.repositories) {
+    repositories.maven {
+        url = file.toURI()
+    }
+}
 
 dependencies {
     compile project(':annyprefs-annotations')
     compile 'com.squareup:javapoet:1.3.0'
     compile 'com.google.auto.service:auto-service:1.0-rc2'
 }
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'anny-prefs-compiler'
+
+    publishedGroupId = 'com.github.greenfrvr'
+    libraryName = 'AnnyPrefs-compiler'
+    artifact = 'annyprefs-compiler'
+
+    libraryDescription = 'Android annotation based SharedPreferences wrapper compiler.'
+
+    siteUrl = 'https://bintray.com/greenfrvr/maven/anny-prefs-compiler'
+    gitUrl = 'https://github.com/greenfrvr/anny-prefs.git'
+
+    libraryVersion = '1.0.0'
+
+    developerId = 'greenfrvr'
+    developerName = 'Artsiom Grintsevich'
+    developerEmail = 'greenfrvr.dev@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+apply from: "install.gradle"
+apply from: "bintray.gradle"
