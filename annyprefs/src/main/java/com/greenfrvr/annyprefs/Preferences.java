@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 /**
  * Created by greenfrvr
  */
-public interface Preferences<S extends Save, R extends Restore, D extends Remove> {
+interface Preferences<S extends Save, R extends Restore, D extends Remove> {
 
     S save();
 

@@ -3,7 +3,7 @@ package com.greenfrvr.annyprefs;
 /**
  * Created by greenfrvr
  */
-public interface TransactionMethod {
+interface TransactionMethod {
     boolean sync();
 
     void async();

@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">AnnyPrefs</string>
     <string name="action_settings">Settings</string>
+
+    <string name="first_launch">launch</string>
+    <string name="username">username</string>
+    <string name="name">full_name</string>
+    <string name="rate">user_rate</string>
 </resources>

@@ -7,12 +7,12 @@ import android.preference.PreferenceManager;
 /**
  * Created by greenfrvr
  */
-abstract class Prefs<S extends Save, R extends Restore, D extends Remove> implements Preferences<S, R, D>, TransactionMethod {
+public abstract class Prefs<S extends Save, R extends Restore, D extends Remove> implements Preferences<S, R, D>, TransactionMethod {
 
     private Context context;
     private SharedPreferences.Editor editor;
 
-    public Prefs(Context context) {
+    protected Prefs(Context context) {
         this.context = context;
     }
 
@@ -20,21 +20,37 @@ abstract class Prefs<S extends Save, R extends Restore, D extends Remove> implem
         return "";
     }
 
+    /**
+     * @return interface which provides saving SharedPreferences properties operation.
+     */
     @Override
     public abstract S save();
 
+    /**
+     * @return interface which provides access to persisted SharedPreferences properties.
+     */
     @Override
     public abstract R restore();
 
+    /**
+     * @return interface which allows to remove persisted SharedPreferences properties.
+     */
     @Override
     public abstract D remove();
 
+    /**
+     * Clears all data of current SharedPreferences instance.
+     */
     @Override
     public void clear() {
         editor().clear().apply();
         editor = null;
     }
 
+    /**
+     * Saving all applied changes. Works by using SharedPreferences.Editor.commit() method.
+     * @return true if changes were successfully written to persistent storage.
+     */
     @Override
     public boolean sync() {
         boolean state = editor().commit();
@@ -42,6 +58,9 @@ abstract class Prefs<S extends Save, R extends Restore, D extends Remove> implem
         return state;
     }
 
+    /**
+     * Saving all applied changes. Works by using SharedPreferences.Editor.apply() method.
+     */
     @Override
     public void async() {
         editor().apply();
@@ -66,15 +85,22 @@ abstract class Prefs<S extends Save, R extends Restore, D extends Remove> implem
         return editor;
     }
 
+    /**
+     * Registers a callback to be invoked when a change happens to a preference.
+     * @param listener - The callback that will run.
+     */
     @Override
     public void registerListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
         shared().registerOnSharedPreferenceChangeListener(listener);
     }
 
+    /**
+     * Unregisters a previous callback.
+     * @param listener - The callback that should be unregistered.
+     */
     @Override
     public void unregisterListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
-        shared().registerOnSharedPreferenceChangeListener(listener);
+        shared().unregisterOnSharedPreferenceChangeListener(listener);
     }
-
 
 }

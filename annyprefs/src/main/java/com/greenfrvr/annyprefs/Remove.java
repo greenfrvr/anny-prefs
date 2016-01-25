@@ -1,7 +1,7 @@
 package com.greenfrvr.annyprefs;
 
 /**
- * Created by greenfrvr on 12/30/15.
+ * Created by greenfrvr
  */
-public interface Remove extends TransactionMethod {
+interface Remove extends TransactionMethod {
 }
