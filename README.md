@@ -5,7 +5,7 @@ Android annotation based `SharedPreferences` wrapper with fluent interface.
 ## Gradle Dependency
 [ ![Download](https://api.bintray.com/packages/greenfrvr/maven/anny-prefs/images/download.svg) ](https://bintray.com/greenfrvr/maven/anny-prefs/_latestVersion)
 
-Due to annotation processing yout will need some extra plugin, so in your main `build.gradle` file add the following classpath to your buildscript dependencies:
+Due to annotation processing you will need some extra plugin, so in your main `build.gradle` file add the following classpath to your buildscript dependencies:
 
 ```Gradle
 buildscript {
