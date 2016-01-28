@@ -1,5 +1,7 @@
 # AnnyPrefs
 
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-AnnyPrefs-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/3072)
+
 Android annotation based `SharedPreferences` wrapper with fluent interface.
 
 ## Gradle Dependency
